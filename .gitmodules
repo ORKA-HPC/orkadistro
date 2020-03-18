@@ -1,0 +1,3 @@
+[submodule "orkaevolution"]
+	path = orkaevolution
+	url = git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
