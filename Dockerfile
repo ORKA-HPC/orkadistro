@@ -5,7 +5,7 @@ RUN apt-get update
 RUN apt-get install -y make vim cmake git wget gcc g++ gfortran gcc-7 g++-7 \
                        gfortran-7 libxml2-dev texlive git automake autoconf libtool \
                        flex bison openjdk-8-jdk debhelper devscripts \
-                       ghostscript lsb-core python perl-doc
+                       ghostscript lsb-core python perl-doc graphviz
 
 # use gcc 7
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
@@ -21,36 +21,54 @@ RUN wget -O boost-1.67.0.tar.bz2 \
 
 # build boost
 WORKDIR /usr/src/boost_1_67_0
-RUN ./bootstrap.sh --prefix=/usr/rose \
+RUN ./bootstrap.sh --prefix=/usr/lib/boost \
     --with-libraries=chrono,date_time,filesystem,iostreams,program_options,random,regex,serialization,signals,system,thread,wave || cat ./bootstrap.log
-RUN ./b2 -sNO_BZIP2=1 install
+RUN ./b2 -j8 -sNO_BZIP2=1 install
 
 # prepare ROSE source code
 WORKDIR /usr/src
 RUN git clone https://github.com/rose-compiler/rose.git
 RUN cd rose && ./build
 
+# add configuration of ld
+ADD ld.so.conf /etc/
+
+# apply ld configuration
+RUN ldconfig
+
+
 # build ROSE
 WORKDIR /usr/src/rose-build
 RUN CC=gcc-7 CXX=g++-7 CXXFLAGS= ../rose/configure --prefix=/usr/rose \
     --oldincludedir=/usr/include --with-C_OPTIMIZE=-O0 --with-CXX_OPTIMIZE=-O0 \
-    --with-C_DEBUG='-g' --with-CXX_DEBUG='-g' --with-boost=/usr/rose \
-    --with-boost-libdir=/usr/rose/lib --with-gfortran=/usr/bin/gfortran-7 \
+    --with-C_DEBUG='-g' --with-CXX_DEBUG='-g' --with-boost=/usr/lib/boost/ \
+    --with-boost-libdir=/usr/lib/boost/lib/ --with-gfortran=/usr/bin/gfortran-7 \
     --enable-languages=c,c++,fortran --enable-projects-directory \
     --enable-edg_version=5.0
+# RUN CXX='g++' CC='gcc' \
+#       CXXFLAGS='-Wall -Wno-unused-local-typedefs -Wno-attributes -std=c++14' \
+#       ../rose/configure \
+#       --enable-assertion-behavior=abort \
+#       --with-gnu-ld \
+#       --prefix=/usr/rose \
+#       --with-CFLAGS=-fPIC \
+#       --with-CXXFLAGS=-fPIC \
+#       --with-C_WARNINGS='-Wall -Wno-unused-local-typedefs -Wno-attributes' \
+#       --with-CXX_WARNINGS='-Wall -Wno-unused-local-typedefs -Wno-attributes' \
+#       --with-boost=/usr/lib/boost/ \
+#       --with-boost-libdir=/usr/lib/boost/lib/ \
+#       --enable-languages=c,c++ \
+#       --without-sqlite3 --without-libreadline --without-magic \
+#       --without-wt --without-yices --without-pch \
+#       --without-haskell \
+#       --enable-edg_version=5.0
 
 # feel free to change the -j value
 RUN make core -j
 RUN make install-core -j
 
-# add configuration of ld
-ADD ld.so.conf /etc/
-
 # setup PATH
 ENV PATH="/usr/rose/bin:/usr/jre/bin:$PATH"
-
-# apply ld configuration
-RUN ldconfig
 
 RUN apt-get update
 RUN apt-get install libicu60
@@ -85,5 +103,6 @@ RUN apt-get -y install ranger vim
 WORKDIR /usr/Xilinx
 ARG VIVADO_VERSION=2018.2
 ENV PATH="/usr/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
+
 
 WORKDIR /root
