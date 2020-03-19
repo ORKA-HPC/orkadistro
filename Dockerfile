@@ -71,8 +71,8 @@ ARG USER_ID=1000
 RUN apt-get install -y sudo
 RUN echo "Set disable_coredump false" > /etc/sudo.conf
 RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
-RUN groupadd build
-RUN useradd -r -g build build
+RUN echo -e "\nbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
 WORKDIR /home/build
 RUN chown -R build /home/build
 RUN chmod -R 755 /home/build
@@ -102,6 +102,17 @@ RUN bash -c '. tapasco-setup.sh && cd ../tapasco/runtime && make install'
 ## Make sure tapasco is in PATH (requires a login shell)!
 WORKDIR /home/build/tapasco-workspace
 RUN cp tapasco-setup.sh /etc/profile.d/tapasco.sh
+
+# (6) Install ORKA-HPC dependencies
+RUN apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format
+RUN updatedb
+
+ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD_LIBRARY_PATH"
+
+# TAPASCO_PREFIX=/usr/local/ ORKA=../../orkaEvolution make -f driver.mk hostBinary
+
+# (7) Install XILINX license server
+ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
 
 USER build
 WORKDIR /home/build

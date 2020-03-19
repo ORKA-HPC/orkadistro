@@ -21,6 +21,3 @@ sudo docker run \
 	-v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
 	$dockerTag
 
-
-# remarks:
-# --------
