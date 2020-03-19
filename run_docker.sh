@@ -17,6 +17,7 @@ sudo docker rm $dockerName
 sudo docker run \
 	--name $dockerName -t -d \
 	-v $PWD:/mnt \
+	-v $PWD/orkaevolution:/home/build/orkaevolution \
 	-v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
 	$dockerTag
 
