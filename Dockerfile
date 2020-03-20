@@ -61,11 +61,6 @@ RUN sed -i '1s/^/#define __builtin_bswap16 __bswap_constant_16\n/' /usr/rose/inc
 # (2) Devtools
 RUN apt-get -y install ranger vim
 
-# (3) Create mountpoint for Xilinx and binaries files to path
-WORKDIR /usr/Xilinx
-ARG VIVADO_VERSION=2018.2
-ENV PATH="/usr/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
-
 # (4) Add build user
 ARG USER_ID=1000
 RUN apt-get install -y sudo
@@ -111,8 +106,14 @@ ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD
 
 # TAPASCO_PREFIX=/usr/local/ ORKA=../../orkaEvolution make -f driver.mk hostBinary
 
+# (3) Create mountpoint for Xilinx and binaries files to path
+WORKDIR /usr/Xilinx
+ARG VIVADO_VERSION=2018.2
+ENV PATH="/usr/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
+
 # (7) Install XILINX license server
 ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
+
 
 USER build
 WORKDIR /home/build
