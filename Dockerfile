@@ -1,4 +1,4 @@
-FROM ubuntu:bionic as build
+FROM ubuntu:bionic
 
 # (1) Build and install ROSE
 RUN apt-get update
