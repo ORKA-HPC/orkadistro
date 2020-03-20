@@ -8,6 +8,9 @@ git submodule sync
 git submodule update --init --recursive
 popd
 
+VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
+
 docker build \
        --build-arg USER_ID="$(id -u)" \
+       --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
        -t rose .
