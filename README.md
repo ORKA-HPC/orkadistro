@@ -9,7 +9,7 @@ Git URL: git@i2git.cs.fau.de:orka/dockerfiles/orkadistro.git
 ## Getting Started
 
 - `./rebuild_docker.sh`
-- `./run_docker.sh`
+- `./run_docker.sh`. **Warning** this erases all commited data inside the running docker instance!
 - `docker exec -it rose bash -l`
 
 You are now logged in.
