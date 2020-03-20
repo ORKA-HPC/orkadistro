@@ -100,7 +100,7 @@ RUN cp tapasco-setup.sh /etc/profile.d/tapasco.sh
 
 # (6) Install ORKA-HPC dependencies
 RUN apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format
-RUN apt-get install -y tcl-dev # fpgainfrastructure dependencies aka. AP2
+RUN apt-get install -y tcl-dev uuid-runtime # fpgainfrastructure dependencies aka. AP2
 RUN updatedb
 
 ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD_LIBRARY_PATH"
