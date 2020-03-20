@@ -19,5 +19,7 @@ sudo docker run \
 	-v $PWD:/mnt \
 	-v $PWD/orkaevolution:/home/build/orkaevolution \
 	-v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
+	-v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
+	-v $PWD/ranger:/home/build/.config/ranger \
 	$dockerTag
 
