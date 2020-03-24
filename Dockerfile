@@ -66,7 +66,7 @@ ARG USER_ID=1000
 RUN apt-get install -y sudo
 RUN echo "Set disable_coredump false" > /etc/sudo.conf
 RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
-RUN echo -e "\nbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN echo "\nbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
 WORKDIR /home/build
 RUN chown -R build /home/build
