@@ -4,3 +4,6 @@
 [submodule "fpgainfrastructure"]
 	path = fpgainfrastructure
 	url = git@i2git.cs.fau.de:orka/vivado/fpgainfrastructure.git
+[submodule "vivado-boards"]
+	path = vivado-boards
+	url = https://github.com/Digilent/vivado-boards
