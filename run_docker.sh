@@ -30,5 +30,4 @@ sudo docker run \
 	-v $PWD/orkaevolution:/home/build/orkaevolution \
 	-v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
 	-v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
-        -v $PWD/vivado-boards:/home/build \
 	$dockerTag
