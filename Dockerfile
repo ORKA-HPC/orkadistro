@@ -120,6 +120,9 @@ ENV PATH="/usr/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
 # (7) Install XILINX license server
 ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
 
+# (8) Copy in config files
+COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
+
 
 USER build
 WORKDIR /home/build
