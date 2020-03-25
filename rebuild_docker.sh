@@ -41,6 +41,10 @@ function init_subs() {
     popd
 }
 
+[ ! -d vivado-boards ] && {
+    git clone https://github.com/Digilent/vivado-boards
+}
+
 
 VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
 
