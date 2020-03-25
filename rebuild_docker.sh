@@ -9,6 +9,9 @@ while [ "${1:-}" != "" ]; do
             shift
             HARD_RESET=true
             ;;
+        "--init-subrepos")
+
+            ;;
         *)
             shift
             ;;
@@ -20,10 +23,24 @@ done
 [ "$HARD_RESET" == "true" ] && {
     echo rm -rf orkaevolution
 
-    git clone git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
-    pushd orkaevolution
+}
+
+function init_subs() {
     git submodule sync
     git submodule update --init --recursive
+}
+
+[ ! -d orkaevolution ] && {
+    git clone git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
+    pushd orkaevolution
+    init_subs
+    popd
+}
+
+[ ! -d fpgainfrastructure ] && {
+    git clone git@i2git.cs.fau.de:orka/vivado/fpgainfrastructure.git
+    pushd fpgainfrastructure
+    init_subs
     popd
 }
 
