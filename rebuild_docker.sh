@@ -9,9 +9,6 @@ while [ "${1:-}" != "" ]; do
             shift
             HARD_RESET=true
             ;;
-        "--init-subrepos")
-
-            ;;
         *)
             shift
             ;;
