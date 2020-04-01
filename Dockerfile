@@ -123,6 +123,8 @@ ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
 # (8) Copy in config files
 COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
 
+# (9) Setup roserebuild mount point
+RUN mkdir roserebuild
 
 USER build
 WORKDIR /home/build

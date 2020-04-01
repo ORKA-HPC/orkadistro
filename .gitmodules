@@ -7,3 +7,6 @@
 [submodule "vivado-boards"]
 	path = vivado-boards
 	url = https://github.com/Digilent/vivado-boards
+[submodule "roserebuild"]
+	path = roserebuild
+	url = git@i2git.cs.fau.de:personalorka/utilities/roserebuild.git
