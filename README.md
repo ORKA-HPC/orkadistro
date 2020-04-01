@@ -22,3 +22,8 @@ You are now logged in.
     - `sudo usermod -aG docker ${USER}`
     - `sudo service docker restart`
     - Log out and back in
+
+## Notes and References
+
+The arty board description files were retrieved from
+[github](https://github.com/Digilent/vivado-boards/archive/master.zip)
