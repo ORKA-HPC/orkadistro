@@ -48,6 +48,7 @@ function init_subs() {
 
 VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
 
+echo [run docker build]
 docker build \
        --build-arg USER_ID="$(id -u)" \
        --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
