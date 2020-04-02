@@ -19,7 +19,9 @@ done
 
 [ "$HARD_RESET" == "true" ] && {
     echo rm -rf orkaevolution
-
+    echo rm -rf roserebuild
+    echo rm -rf fpgainfrastructure
+    echo rm -rf vivado-boards
 }
 
 function init_subs() {
@@ -27,22 +29,28 @@ function init_subs() {
     git submodule update --init --recursive
 }
 
+[ ! -d rebuildrose ] && {
+    git submodule add git@i2git.cs.fau.de:personalorka/utilities/roserebuild.git
+}
+
 [ ! -d orkaevolution ] && {
-    git clone git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
-    pushd orkaevolution
-    init_subs
-    popd
+    git submodule add git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
+    (
+        cd orkaevolution
+        init_subs
+    )
 }
 
 [ ! -d fpgainfrastructure ] && {
-    git clone git@i2git.cs.fau.de:orka/vivado/fpgainfrastructure.git
-    pushd fpgainfrastructure
-    init_subs
-    popd
+    git submodule add git@i2git.cs.fau.de:orka/vivado/fpgainfrastructure.git
+    (
+        cd fpgainfrastructure
+        init_subs
+    )
 }
 
 [ ! -d vivado-boards ] && {
-    git clone https://github.com/Digilent/vivado-boards
+    git submodule add https://github.com/Digilent/vivado-boards
 }
 
 
