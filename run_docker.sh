@@ -4,8 +4,8 @@ dockerTag=rose
 dockerName=rose
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
-XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/usr/Xilinx"}"
+XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
 
 [ ! -d $XILINX_HOST_PATH ] && {
     echo $XILINX_HOST_PATH does not exist in host file system
