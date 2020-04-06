@@ -47,4 +47,4 @@ be gone after the shell exits!
 ## Notes and References
 
 The arty board description files were retrieved from
-[github](https://github.com/Digilent/vivado-boards/archive/master.zip)
+[github](https://github.com/Digilent/vivado-boards)
