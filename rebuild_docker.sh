@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-DOCKER_TAG="i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"
+DOCKER_TAG=${DOCKER_TAG:-"i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"}"
+VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
 
 HARD_RESET=""
 
@@ -56,7 +57,6 @@ function init_subs() {
 }
 
 
-VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
 
 docker build \
        --build-arg USER_ID="$(id -u)" \

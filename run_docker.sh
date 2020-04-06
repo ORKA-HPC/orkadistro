@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-dockerTag="i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"
-dockerName=orkadistro
+DOCKER_TAG="${DOCKER_TAG:-"i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"}"
+DOCKER_NAME="${DOCKER_NAME:-orkadistro}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/usr/Xilinx"}"
@@ -32,13 +32,13 @@ while [ "${1:-}" != "" ]; do
 done
 
 if [ "${exec_into_container}" == "true" ]; then
-    docker exec -it $dockerName bash -l
+    docker exec -it $DOCKER_NAME bash -l
     exit 0
 fi
 
 ## docker foo wohoo
-sudo docker stop $dockerName
-sudo docker rm $dockerName
+sudo docker stop $DOCKER_NAME
+sudo docker rm $DOCKER_NAME
 
 mkdir -p \
       __vivado_boardfiles_overlay_work_dir \
@@ -66,11 +66,11 @@ sudo mount -t overlay overlay \
 
 docker_mnt_point="${XILINX_DOCKER_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board_files/"
 sudo docker run \
-     --name $dockerName -t -d \
+     --name $DOCKER_NAME -t -d \
      -v $PWD:/mnt \
      -v $PWD/orkaevolution:/home/build/orkaevolution \
      -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
      -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
      -v $PWD/roserebuild:/home/build/roserebuild \
      -v $PWD/"$mnt_point":"$docker_mnt_point" \
-     $dockerTag
+     $DOCKER_TAG
