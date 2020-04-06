@@ -5,7 +5,6 @@ Git URL: git@i2git.cs.fau.de:orka/dockerfiles/orkadistro.git
 ## Minimal Requirements
 - Docker v1.13.1
 
-
 ## Getting Started
 
 - `./rebuild_docker.sh`
@@ -20,6 +19,19 @@ You are now logged in.
 - `./run_docker.sh --exec-shell` gets you a shell in the container.
 - `./run_docker.sh --stop-and-unmount` stops and removes the running image.
   It also removes the mount directory from the overlay mount.
+
+## Pulling a pre-built Docker image
+
+In order to prevent users from having to build this Docker image
+themselves (which would be a very time consuming thing to do), we
+additionally host pre-build Docker images here on i2git.
+
+A simple
+`$ docker run -it i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro bash -l`
+ought to be enough to pull the container, to start it, and
+to launch a bash process inside it. Note that the container
+**and all the changes you will have made inside it** will
+be gone after the shell exits!
 
 ## Frequent Issues
 
