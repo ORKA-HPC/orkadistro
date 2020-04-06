@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+DOCKER_TAG="i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"
+
 HARD_RESET=""
 
 # rm -rf orkaevolution
@@ -59,4 +61,4 @@ VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
 docker build \
        --build-arg USER_ID="$(id -u)" \
        --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
-       -t rose .
+       -t "$DOCKER_TAG" .

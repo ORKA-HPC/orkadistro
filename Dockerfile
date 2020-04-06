@@ -128,5 +128,7 @@ RUN mkdir -p /home/build/roserebuild
 RUN chown -R build /home/build
 RUN chmod -R 755 /home/build
 
+# (10) Build custom rose
+
 USER build
 WORKDIR /home/build

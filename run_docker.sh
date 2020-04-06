@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-dockerTag=rose
-dockerName=rose
+dockerTag="i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"
+dockerName=orkadistro
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/usr/Xilinx"}"
