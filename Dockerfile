@@ -31,7 +31,7 @@ RUN git clone https://github.com/rose-compiler/rose.git
 RUN cd rose && ./build
 
 # add configuration of ld
-ADD ld.so.conf /etc/
+ADD cfg_files/ld.so.conf /etc/
 
 # apply ld configuration
 RUN ldconfig
