@@ -2,8 +2,10 @@
 
 DOCKER_TAG="${DOCKER_TAG:-"i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"}"
 VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
+BUILD_ORKA_ROSE="${BUILD_ORKA_ROSE:-false}"
 
 HARD_RESET=""
+PUSH_IMAGE=""
 
 # rm -rf orkaevolution
 while [ "${1:-}" != "" ]; do
@@ -11,6 +13,14 @@ while [ "${1:-}" != "" ]; do
         "--reset-hard" | "--hard-reset")
             shift
             HARD_RESET=true
+            ;;
+        "--push-image" | "-p")
+            shift
+            PUSH_IMAGE=true
+            ;;
+        "--build-orka-rose" | "-o")
+            shift
+            BUILD_ORKA_ROSE=true
             ;;
         *)
             shift
@@ -56,9 +66,12 @@ function init_subs() {
     git submodule add https://github.com/Digilent/vivado-boards
 }
 
-
-
-docker build \
-       --build-arg USER_ID="$(id -u)" \
+docker build --build-arg USER_ID="$(id -u)" \
+       --build-arg BUILD_ORKA_ROSE="$BUILD_ORKA_ROSE" \
        --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
        -t "$DOCKER_TAG" .
+
+
+if [ "$PUSH_IMAGE" == "true" ]; then
+    docker push i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro
+fi
