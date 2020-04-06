@@ -129,6 +129,11 @@ RUN chown -R build /home/build
 RUN chmod -R 755 /home/build
 
 # (10) Build custom rose
+ARG BUILD_ORKA_ROSE=false
+WORKDIR /home/build/roserebuild
+RUN [ "$BUILD_ORKA_ROSE" == "true" ] \
+        && { ./rebuild --prepare --build --install; } \
+        || { echo [orka rose was not built]; }
 
 USER build
 WORKDIR /home/build
