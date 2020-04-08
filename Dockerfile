@@ -3,6 +3,7 @@ FROM ubuntu:bionic
 # ARGS
 # You can’t change ENV directly during the build
 ARG VIVADO_VERSION=2018.2
+ARG ARG_MAX_CORES=""
 ARG ARG_EDG_ACCESS_TOKEN=fail
 ARG ARG_ROSE_ACCESS_TOKEN=fail
 ARG USER_ID=1000
@@ -12,6 +13,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ENV EDG_ACCESS_TOKEN=$ARG_EDG_ACCESS_TOKEN
 ENV ROSE_ACCESS_TOKEN=$ARG_ROSE_ACCESS_TOKEN
+ENV MAX_CORES=$ARG_MAX_CORES
 
 
 SHELL [ "/bin/bash", "-c" ]
@@ -107,7 +109,7 @@ RUN bash -c '../tapasco/tapasco-init.sh'
 RUN bash -c '. tapasco-setup.sh && tapasco-build-toolflow'
 
 ## build tapasco libs
-RUN source tapasco-setup.sh && cd ../tapasco/runtime && { cmake . && make ; }
+RUN source tapasco-setup.sh && cd ../tapasco/runtime && { cmake . && make -j$MAX_CORES; }
 USER root
 RUN source tapasco-setup.sh && cd ../tapasco/runtime && make install
 
