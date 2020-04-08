@@ -1,77 +1,67 @@
 #!/usr/bin/env bash
 
-DOCKER_TAG="${DOCKER_TAG:-"i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"}"
-VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
-BUILD_ORKA_ROSE="${BUILD_ORKA_ROSE:-false}"
+IMAGE_NAME="${IMAGE_NAME:-"orkadistro"}"
+IMAGE_TAG="${IMAGE_TAG:-latest}"
 
-HARD_RESET=""
-PUSH_IMAGE=""
+EDG_ACCESS_TOKEN="${EDG_ACCESS_TOKEN:-$(pass fau/orka/edgAccessToken)}"
+ROSE_ACCESS_TOKEN="${ROSE_ACCESS_TOKEN:-$(pass fau/orka/roseAccessToken)}"
+
+VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
+DOCKER_PUSH_PATH="i2git.cs.fau.de:5005/orka/dockerfiles"
+
+IMAGE_TYPE="" # can be {dev,dev-edg,prod}
+PUSH_IMAGE="false"
 
 # rm -rf orkaevolution
 while [ "${1:-}" != "" ]; do
     case "${1}" in
-        "--reset-hard" | "--hard-reset")
+        "--image-type" | "-i")
             shift
-            HARD_RESET=true
+            IMAGE_TYPE="${1}"
             ;;
         "--push-image" | "-p")
             shift
             PUSH_IMAGE=true
             ;;
-        "--build-orka-rose" | "-o")
+        "--rose-access-token" | "-r")
             shift
-            BUILD_ORKA_ROSE=true
+            ROSE_ACCESS_TOKEN="$1"
+            ;;
+        "--edg-access-token" | "-e")
+            shift
+            EDG_ACCESS_TOKEN="$1"
             ;;
         *)
+            echo [ WARNING: unknown flag ]
             shift
             ;;
     esac
     shift
 done
 
-
-[ "$HARD_RESET" == "true" ] && {
-    echo rm -rf orkaevolution
-    echo rm -rf roserebuild
-    echo rm -rf fpgainfrastructure
-    echo rm -rf vivado-boards
+[ "$IMAGE_TYPE" == "dev" ] \
+    || [ "$IMAGE_TYPE" == "dev-edg" ] \
+    || [ "$IMAGE_TYPE" == "prod" ] \
+    || {
+    echo [ IMAGE_TYPE is wrong ]
+    exit 1
 }
 
-function init_subs() {
-    git submodule sync
-    git submodule update --init --recursive
-}
+DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TYPE-$IMAGE_TAG"
 
-[ ! -d roserebuild ] && {
-    git submodule add git@i2git.cs.fau.de:personalorka/utilities/roserebuild.git
-}
+echo building docker with USER_ID="$(id -u)" \
+       IMAGE_TYPE="$IMAGE_TYPE" ARG_EDG_ACCESS_TOKEN="$EDG_ACCESS_TOKEN" \
+       ARG_ROSE_ACCESS_TOKEN="$ROSE_ACCESS_TOKEN" VIVADO_VERSION="${VIVADO_VERSION}" \
 
-[ ! -d orkaevolution ] && {
-    git submodule add git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
-    (
-        cd orkaevolution
-        init_subs
-    )
-}
-
-[ ! -d fpgainfrastructure ] && {
-    git submodule add git@i2git.cs.fau.de:orka/vivado/fpgainfrastructure.git
-    (
-        cd fpgainfrastructure
-        init_subs
-    )
-}
-
-[ ! -d vivado-boards ] && {
-    git submodule add https://github.com/Digilent/vivado-boards
-}
-
-docker build --build-arg USER_ID="$(id -u)" \
-       --build-arg BUILD_ORKA_ROSE="$BUILD_ORKA_ROSE" \
+docker build \
+       --build-arg USER_ID="$(id -u)" \
+       --build-arg IMAGE_TYPE="$IMAGE_TYPE" \
+       --build-arg ARG_EDG_ACCESS_TOKEN="$EDG_ACCESS_TOKEN" \
+       --build-arg ARG_ROSE_ACCESS_TOKEN="$ROSE_ACCESS_TOKEN" \
        --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
-       -t "$DOCKER_TAG" .
+       -t "${DOCKER_COMPOUND_TAG}" . || exit 1
 
 
 if [ "$PUSH_IMAGE" == "true" ]; then
-    docker push i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro
+    docker push "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
 fi
