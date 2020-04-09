@@ -32,6 +32,16 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
 RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 100
 
+# Add build user
+RUN apt-get install -y sudo
+RUN echo "Set disable_coredump false" > /etc/sudo.conf
+RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
+RUN echo "\nbuild ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers
+RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
+WORKDIR /home/build
+RUN chown -R build /home/build
+RUN chmod -R 755 /home/build
+
 # Fetch and build boost
 WORKDIR /usr/src
 RUN wget -O boost-1.67.0.tar.bz2 \
@@ -52,45 +62,36 @@ RUN ldconfig
 ENV PATH="/usr/rose/bin:/usr/jre/bin:$PATH"
 
 
-
-
 # Build ROSE source code
 WORKDIR /usr/src
-COPY roserebuild/rebuild.sh /usr/src/rebuild.sh
+WORKDIR /usr/src/rose
+WORKDIR /usr/src/rose-git
+COPY roserebuild/rebuild.sh /usr/src/rose/rebuild.sh
+COPY roserebuild/rebuild.sh /usr/src/rose-git/rebuild.sh
+
+# always build mainline
+WORKDIR /usr/src/rose
+RUN PREFIX="/usr/rose" ./rebuild.sh --prepare --build --install
+RUN [ "$IMAGE_TYPE" == "prod" ] && PREFIX="/usr/rose" ./rebuild.sh --reset
+
+WORKDIR /usr/src/rose-git
 RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
-        && { \
-        ( mkdir -p rose && cd rose \
-        && PREFIX="/usr/rose" ./rebuild.sh --prepare --build --install ; ) ;\
-        ( mkdir -p rose-git && cd rose-git && \
-        PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
-        --build --install --with-edg-repo --reset; ) \
-        } \
-        || PREFIX="/usr/rose" ./rebuild.sh --prepare --build --install
+        && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
+        --build --install --with-edg-repo
+
+RUN [ "$IMAGE_TYPE" == "prod" ] && PREFIX="/usr/rose-git" ./rebuild.sh --reset
+
 
 RUN apt-get update
 RUN apt-get install libicu60
-RUN sed -i '1s/^/#define __builtin_bswap16 __bswap_constant_16\n/' /usr/rose/include/edg/g++-7_HEADERS/hdrs7/bits/byteswap.h
+RUN sed -i '1s/^/#define __builtin_bswap16 __bswap_constant_16\n/' \
+        /usr/rose/include/edg/g++-7_HEADERS/hdrs7/bits/byteswap.h
 
-# build ROSE
-# WORKDIR /usr/src/rose-build
-# RUN CC=gcc-7 CXX=g++-7 CXXFLAGS= ../rose/configure --prefix=/usr/rose \
-#     --oldincludedir=/usr/include --with-C_OPTIMIZE=-O0 --with-CXX_OPTIMIZE=-O0 \
-#     --with-C_DEBUG='-g' --with-CXX_DEBUG='-g' --with-boost=/usr/lib/boost/ \
-#     --with-boost-libdir=/usr/lib/boost/lib/ --with-gfortran=/usr/bin/gfortran-7 \
-#     --enable-languages=c,c++,fortran --enable-projects-directory \
-#     --enable-edg_version=5.0
+USER build
+RUN cp -r /usr/src/rose-git /home/build/rose-git
 
 
-# Add build user
-RUN apt-get install -y sudo
-RUN echo "Set disable_coredump false" > /etc/sudo.conf
-RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
-RUN echo "\nbuild ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers
-RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
-WORKDIR /home/build
-RUN chown -R build /home/build
-RUN chmod -R 755 /home/build
-
+USER root
 # Build and Install tapasco
 RUN apt-get install -y \
     build-essential linux-headers-generic python \
@@ -99,7 +100,8 @@ RUN apt-get install -y \
 USER build
 WORKDIR /home/build
 ARG TAPASCO_TAG=2019.10
-RUN git clone --branch $TAPASCO_TAG https://github.com/esa-tu-darmstadt/tapasco.git
+RUN git clone --branch \
+        $TAPASCO_TAG https://github.com/esa-tu-darmstadt/tapasco.git
 
 ## build tapasco toolflow
 USER build
@@ -140,6 +142,7 @@ ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
 
 # Copy in config files
 COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
+RUN chown -R build:build /home/build/ && chmod -R 755 /home/build/
 
 # Change user and set entry PWD
 USER build
