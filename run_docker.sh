@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DOCKER_TAG="${DOCKER_TAG:-"i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro"}"
+DOCKER_TAG="${DOCKER_TAG:-"dev-edg-latest"}"
 DOCKER_NAME="${DOCKER_NAME:-orkadistro}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
@@ -68,24 +68,24 @@ function unmount_boardfiles_overlay() {
 
 function launch_container_background() {
     sudo docker run \
-         --name $DOCKER_NAME -t -d \
+         --name $DOCKER_NAME-$DOCKER_TAG -t -d \
          -v $PWD:/mnt \
          -v $PWD/orkaevolution:/home/build/orkaevolution \
          -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
          -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
          -v $PWD/roserebuild:/home/build/roserebuild \
          -v $PWD/"$mnt_point":"$docker_mnt_point" \
-         $DOCKER_TAG
+         $DOCKER_NAME:$DOCKER_TAG
 }
 
 [ "${stop_and_unmount}" == "true" ] && {
-    sudo docker stop $DOCKER_NAME
+    sudo docker stop $DOCKER_NAME-$DOCKER_TAG
     unmount_boardfiles_overlay
 }
 
 [ "${stop_remove_and_unmount}" == "true" ] && {
-    sudo docker stop $DOCKER_NAME
-    sudo docker rm $DOCKER_NAME
+    sudo docker stop $DOCKER_NAME-$DOCKER_TAG
+    sudo docker rm $DOCKER_NAME-$DOCKER_TAG
     unmount_boardfiles_overlay
 }
 
@@ -95,6 +95,6 @@ function launch_container_background() {
 }
 
 [ "${exec_into_container}" == "true" ] && {
-    docker exec -it $DOCKER_NAME bash -l || \
+    docker exec -it $DOCKER_NAME-$DOCKER_TAG bash -l || \
         echo [could not open shell in container, probably you need to start it first. exit]
 }

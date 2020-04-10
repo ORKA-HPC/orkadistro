@@ -25,7 +25,6 @@ while [ "${1:-}" != "" ]; do
             IMAGE_TYPE="${1}"
             ;;
         "--push-image" | "-p")
-            shift
             PUSH_IMAGE=true
             ;;
         "--rose-access-token" | "-r")
@@ -44,11 +43,8 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-[ "$IMAGE_TYPE" == "dev" ] \
-    || [ "$IMAGE_TYPE" == "dev-edg" ] \
-    || [ "$IMAGE_TYPE" == "prod" ] \
-    || {
-    echo [ IMAGE_TYPE is wrong ]
+[ "$IMAGE_TYPE" = "dev" -o "$IMAGE_TYPE" = "dev-edg" -o "$IMAGE_TYPE" = "prod" ]  || {
+    echo [ $IMAGE_TYPE is wrong ]
     exit 1
 }
 
@@ -69,5 +65,7 @@ docker build \
 
 
 if [ "$PUSH_IMAGE" == "true" ]; then
+    echo [ Push image "${DOCKER_COMPOUND_TAG}" to "${DOCKER_PUSH_PATH}" ]
+    docker tag "$IMAGE_NAME" "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
     docker push "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
 fi

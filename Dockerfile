@@ -32,11 +32,23 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
 RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 100
 
+# This stupid workaround has to be included because
+# we need git submodule _set-url_ in script rebuild.sh ...
+#        Sadly git from mainline 18.04 is too old for this
+# If one day this PPA fails, you'll have to sed -i the
+# .gitmodules in /home/build/src/rose-git/.
+# ([submodule "src/frontend/CxxFrontend/EDG"] to be specific.)
+sudo apt-get install software-properties-common
+sudo apt-add-repository ppa:git-core/ppa
+sudo apt-get update
+sudo apt-get install git
+
 # Add build user
 RUN apt-get install -y sudo
 RUN echo "Set disable_coredump false" > /etc/sudo.conf
 RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
-RUN echo "\nbuild ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers
+RUN echo >> /etc/sudoers \
+        && echo "build ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers
 RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
 WORKDIR /home/build
 RUN chown -R build /home/build
@@ -63,33 +75,33 @@ ENV PATH="/usr/rose/bin:/usr/jre/bin:$PATH"
 
 
 # Build ROSE source code
-WORKDIR /usr/src
-WORKDIR /usr/src/rose
-WORKDIR /usr/src/rose-git
-COPY roserebuild/rebuild.sh /usr/src/rose/rebuild.sh
-COPY roserebuild/rebuild.sh /usr/src/rose-git/rebuild.sh
+WORKDIR /home/build/src
+WORKDIR /home/build/src/rose
+WORKDIR /home/build/src/rose-git
+COPY roserebuild/rebuild.sh /home/build/src/rose/rebuild.sh
+COPY roserebuild/rebuild.sh /home/build/src/rose-git/rebuild.sh
 
 # always build mainline
-WORKDIR /usr/src/rose
+WORKDIR /home/build/src/rose
 RUN PREFIX="/usr/rose" ./rebuild.sh --prepare --build --install
-RUN [ "$IMAGE_TYPE" == "prod" ] && PREFIX="/usr/rose" ./rebuild.sh --reset
+RUN ls -la
+RUN [ "$IMAGE_TYPE" == "prod" ] && ./rebuild.sh --reset || true
 
-WORKDIR /usr/src/rose-git
+# conditionally build rose with custom EDG
+WORKDIR /home/build/src/rose-git
 RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
         --build --install --with-edg-repo
 
-RUN [ "$IMAGE_TYPE" == "prod" ] && PREFIX="/usr/rose-git" ./rebuild.sh --reset
+# RUN [ "$IMAGE_TYPE" == "prod" ] \
+#         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
+#         --build --install --with-edg-repo --reset
 
 
 RUN apt-get update
 RUN apt-get install libicu60
 RUN sed -i '1s/^/#define __builtin_bswap16 __bswap_constant_16\n/' \
         /usr/rose/include/edg/g++-7_HEADERS/hdrs7/bits/byteswap.h
-
-USER build
-RUN cp -r /usr/src/rose-git /home/build/rose-git
-
 
 USER root
 # Build and Install tapasco
@@ -119,8 +131,6 @@ RUN source tapasco-setup.sh && cd ../tapasco/runtime && make install
 WORKDIR /home/build/tapasco-workspace
 RUN cp tapasco-setup.sh /etc/profile.d/tapasco.sh
 
-
-
 # Install ORKA-HPC dependencies
 RUN apt-get update -y
 RUN apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format
@@ -128,8 +138,6 @@ RUN apt-get install -y tcl-dev uuid-runtime
 RUN updatedb
 
 ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD_LIBRARY_PATH"
-
-# TAPASCO_PREFIX=/usr/local/ ORKA=../../orkaEvolution make -f driver.mk hostBinary
 
 # Create mountpoint for Xilinx and binaries files to path
 WORKDIR /usr/Xilinx
