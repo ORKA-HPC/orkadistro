@@ -38,17 +38,16 @@ RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7
 # If one day this PPA fails, you'll have to sed -i the
 # .gitmodules in /home/build/src/rose-git/.
 # ([submodule "src/frontend/CxxFrontend/EDG"] to be specific.)
-sudo apt-get install software-properties-common
-sudo apt-add-repository ppa:git-core/ppa
-sudo apt-get update
-sudo apt-get install git
+RUN apt-get -y install software-properties-common
+RUN apt-add-repository ppa:git-core/ppa -y
+RUN apt-get -y update
+RUN apt-get -y install git
 
 # Add build user
 RUN apt-get install -y sudo
 RUN echo "Set disable_coredump false" > /etc/sudo.conf
 RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
-RUN echo >> /etc/sudoers \
-        && echo "build ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers
+RUN ( echo && echo "build ALL=(ALL) NOPASSWD: ALL" ) >> /etc/sudoers
 RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
 WORKDIR /home/build
 RUN chown -R build /home/build
