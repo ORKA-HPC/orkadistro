@@ -51,7 +51,7 @@ RUN ( echo && echo "build ALL=(ALL) NOPASSWD: ALL" ) >> /etc/sudoers
 RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
 WORKDIR /home/build
 RUN chown -R build /home/build
-RUN chmod -R 755 /home/build
+# RUN chmod -R 755 /home/build
 
 # Fetch and build boost
 WORKDIR /usr/src
@@ -148,8 +148,11 @@ ENV PATH="/usr/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
 ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
 
 # Copy in config files
+USER build
 COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
-RUN chown -R build:build /home/build/ && chmod -R 755 /home/build/
+RUN chown -R build:build /home/build/
+#        && chmod -R 755 /home/build/
+# todo check
 
 # Change user and set entry PWD
 USER build
