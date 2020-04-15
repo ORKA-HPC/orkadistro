@@ -12,6 +12,7 @@ DOCKER_PUSH_PATH="i2git.cs.fau.de:5005/orka/dockerfiles"
 IMAGE_TYPE="" # can be {dev,dev-edg,prod}
 PUSH_IMAGE="false"
 MAX_CORES="${MAX_CORES:-}"
+USER_ID="${USER_ID:-"$(id -u)"}"
 
 # rm -rf orkaevolution
 while [ "${1:-}" != "" ]; do
@@ -55,7 +56,7 @@ echo building docker with USER_ID="$(id -u)" \
        ARG_ROSE_ACCESS_TOKEN="$ROSE_ACCESS_TOKEN" VIVADO_VERSION="${VIVADO_VERSION}" \
 
 docker build \
-       --build-arg USER_ID="$(id -u)" \
+       --build-arg USER_ID="$USER_ID" \
        --build-arg IMAGE_TYPE="$IMAGE_TYPE" \
        --build-arg ARG_MAX_CORES="$MAX_CORES" \
        --build-arg ARG_EDG_ACCESS_TOKEN="$EDG_ACCESS_TOKEN" \
