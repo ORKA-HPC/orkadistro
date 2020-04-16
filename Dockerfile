@@ -87,6 +87,7 @@ RUN ls -la
 RUN [ "$IMAGE_TYPE" == "prod" ] && ./rebuild.sh --reset || true
 
 # conditionally build rose with custom EDG
+# TODO: in the future, we want our custom branch to be built!
 WORKDIR /home/build/src/rose-git
 RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
