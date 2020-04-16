@@ -9,7 +9,7 @@ XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
 
 [ ! -d $XILINX_HOST_PATH ] && {
     echo $XILINX_HOST_PATH does not exist in host file system
-    exit 1
+    # exit 1
 }
 
 vivado_board_files_dir="vivado-boards/new/board_files/"

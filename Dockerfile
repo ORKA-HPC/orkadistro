@@ -90,7 +90,7 @@ RUN [ "$IMAGE_TYPE" == "prod" ] && ./rebuild.sh --reset || true
 WORKDIR /home/build/src/rose-git
 RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
-        --build --install --with-edg-repo
+        --build --install --with-edg-repo || true
 
 # RUN [ "$IMAGE_TYPE" == "prod" ] \
 #         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
@@ -150,6 +150,8 @@ ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
 # Copy in config files
 USER build
 COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
+
+USER root
 RUN chown -R build:build /home/build/
 #        && chmod -R 755 /home/build/
 # todo check
