@@ -89,6 +89,7 @@ function launch_container_background() {
          -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
          -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
          -v $PWD/roserebuild:/home/build/roserebuild \
+         -v $PWD/rose-git:/home/build/rose-git \
          -v $PWD/"$mnt_point":"$docker_mnt_point" \
          $DOCKER_NAME:$DOCKER_TAG
 }
