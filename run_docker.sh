@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+
+function print_help(){
+    echo "flags:"
+    echo "--stop-and-unmount or -q"
+    echo "--stop-remove-and-unmount or -q"
+    echo "--exec-shell or -e"
+    echo "--run-background -r"
+    echo "--help or -h"
+}
+
+
 DOCKER_TAG="${DOCKER_TAG:-"dev-edg-latest"}"
 DOCKER_NAME="${DOCKER_NAME:-orkadistro}"
 
@@ -40,6 +51,10 @@ while [ "${1:-}" != "" ]; do
             ;;
         "--run-background" | "-r")
             run_in_background="true"
+            ;;
+        "--help" | "-h")
+            print_help
+            exit
             ;;
         *)
             echo [unknown cli flag]
@@ -95,6 +110,6 @@ function launch_container_background() {
 }
 
 [ "${exec_into_container}" == "true" ] && {
-    docker exec -it $DOCKER_NAME-$DOCKER_TAG bash -l || \
+    docker exec -u build -it $DOCKER_NAME-$DOCKER_TAG bash -l || \
         echo [could not open shell in container, probably you need to start it first. exit]
 }
