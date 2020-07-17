@@ -4,15 +4,15 @@ FROM ubuntu:bionic
 # You can’t change ENV directly during the build
 ARG VIVADO_VERSION=2018.2
 ARG ARG_MAX_CORES=""
-ARG ARG_EDG_ACCESS_TOKEN=fail
-ARG ARG_ROSE_ACCESS_TOKEN=fail
+# ARG ARG_EDG_ACCESS_TOKEN=fail
+# ARG ARG_ROSE_ACCESS_TOKEN=fail
 ARG USER_ID=1000
-ARG IMAGE_TYPE=fail
+# ARG IMAGE_TYPE=fail
 # PLEASE APT SHUT uuuuuUP!!
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV EDG_ACCESS_TOKEN=$ARG_EDG_ACCESS_TOKEN
-ENV ROSE_ACCESS_TOKEN=$ARG_ROSE_ACCESS_TOKEN
+# ENV EDG_ACCESS_TOKEN=$ARG_EDG_ACCESS_TOKEN
+# ENV ROSE_ACCESS_TOKEN=$ARG_ROSE_ACCESS_TOKEN
 ENV MAX_CORES=$ARG_MAX_CORES
 
 
@@ -72,26 +72,24 @@ RUN ldconfig
 ## setup PATH
 ENV PATH="/usr/rose/bin:/usr/jre/bin:$PATH"
 
-
 # Build ROSE source code
-WORKDIR /home/build/src
-WORKDIR /home/build/src/rose
-WORKDIR /home/build/src/rose-git
-COPY roserebuild/rebuild.sh /home/build/src/rose/rebuild.sh
-COPY roserebuild/rebuild.sh /home/build/src/rose-git/rebuild.sh
+# WORKDIR /home/build/src
+# WORKDIR /home/build/src/rose
+# WORKDIR /home/build/src/rose-git
+# COPY roserebuild/rebuild.sh /home/build/src/rose/rebuild.sh
+# COPY roserebuild/rebuild.sh /home/build/src/rose-git/rebuild.sh
 
 # always build mainline
 WORKDIR /home/build/src/rose
-RUN PREFIX="/usr/rose" ./rebuild.sh --prepare --build --install
-RUN ls -la
-RUN [ "$IMAGE_TYPE" == "prod" ] && ./rebuild.sh --reset || true
+# RUN PREFIX="/usr/rose" ./rebuild.sh --prepare --build --install
+# RUN [ "$IMAGE_TYPE" == "prod" ] && ./rebuild.sh --reset
 
 # conditionally build rose with custom EDG
 # TODO: in the future, we want our custom branch to be built!
-WORKDIR /home/build/src/rose-git
-RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
-        && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
-        --build --install --with-edg-repo || true
+# WORKDIR /home/build/src/rose-git
+# RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
+#         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
+#         --build --install --with-edg-repo || true
 
 # RUN [ "$IMAGE_TYPE" == "prod" ] \
 #         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
@@ -100,8 +98,6 @@ RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
 
 RUN apt-get update
 RUN apt-get install libicu60
-RUN sed -i '1s/^/#define __builtin_bswap16 __bswap_constant_16\n/' \
-        /usr/rose/include/edg/g++-7_HEADERS/hdrs7/bits/byteswap.h
 
 USER root
 # Build and Install tapasco
