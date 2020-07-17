@@ -110,6 +110,6 @@ function launch_container_background() {
 }
 
 [ "${exec_into_container}" == "true" ] && {
-    docker exec -u build -it $DOCKER_NAME-$DOCKER_TAG bash -l || \
+    docker exec -u build -it $DOCKER_NAME-$DOCKER_TAG bash -c bash -l || \
         echo [could not open shell in container, probably you need to start it first. exit]
 }

@@ -148,6 +148,7 @@ ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
 USER build
 COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
 
+
 USER root
 RUN chown -R build:build /home/build/
 #        && chmod -R 755 /home/build/
@@ -156,3 +157,5 @@ RUN chown -R build:build /home/build/
 # Change user and set entry PWD
 USER build
 WORKDIR /home/build
+
+COPY cfg_files/dockerbashrc /home/build/.bashrc
