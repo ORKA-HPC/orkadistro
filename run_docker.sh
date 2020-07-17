@@ -11,7 +11,7 @@ function print_help(){
 }
 
 
-DOCKER_TAG="${DOCKER_TAG:-"dev-edg-latest"}"
+DOCKER_TAG="${DOCKER_TAG:-"dev-latest"}"
 DOCKER_NAME="${DOCKER_NAME:-orkadistro}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
@@ -82,26 +82,25 @@ function unmount_boardfiles_overlay() {
 }
 
 function launch_container_background() {
-    sudo docker run \
+    docker run \
          --name $DOCKER_NAME-$DOCKER_TAG -t -d \
          -v $PWD:/mnt \
          -v $PWD/orkaevolution:/home/build/orkaevolution \
          -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
          -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
          -v $PWD/roserebuild:/home/build/roserebuild \
-         -v $PWD/rose-git:/home/build/rose-git \
          -v $PWD/"$mnt_point":"$docker_mnt_point" \
          $DOCKER_NAME:$DOCKER_TAG
 }
 
 [ "${stop_and_unmount}" == "true" ] && {
-    sudo docker stop $DOCKER_NAME-$DOCKER_TAG
+    docker stop $DOCKER_NAME-$DOCKER_TAG
     unmount_boardfiles_overlay
 }
 
 [ "${stop_remove_and_unmount}" == "true" ] && {
-    sudo docker stop $DOCKER_NAME-$DOCKER_TAG
-    sudo docker rm $DOCKER_NAME-$DOCKER_TAG
+    docker stop $DOCKER_NAME-$DOCKER_TAG
+    docker rm $DOCKER_NAME-$DOCKER_TAG
     unmount_boardfiles_overlay
 }
 
