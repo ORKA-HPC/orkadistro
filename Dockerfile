@@ -158,4 +158,4 @@ RUN chown -R build:build /home/build/
 USER build
 WORKDIR /home/build
 
-COPY cfg_files/dockerbashrc /home/build/.bashrc
+COPY cfg_files/dockerbashrc /home/build/.profile
