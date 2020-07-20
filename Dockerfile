@@ -72,30 +72,6 @@ RUN ldconfig
 ## setup PATH
 ENV PATH="/usr/rose/bin:/usr/jre/bin:$PATH"
 
-# Build ROSE source code
-# WORKDIR /home/build/src
-# WORKDIR /home/build/src/rose
-# WORKDIR /home/build/src/rose-git
-# COPY roserebuild/rebuild.sh /home/build/src/rose/rebuild.sh
-# COPY roserebuild/rebuild.sh /home/build/src/rose-git/rebuild.sh
-
-# always build mainline
-WORKDIR /home/build/src/rose
-# RUN PREFIX="/usr/rose" ./rebuild.sh --prepare --build --install
-# RUN [ "$IMAGE_TYPE" == "prod" ] && ./rebuild.sh --reset
-
-# conditionally build rose with custom EDG
-# TODO: in the future, we want our custom branch to be built!
-# WORKDIR /home/build/src/rose-git
-# RUN [ "$IMAGE_TYPE" == "dev-edg" ] \
-#         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
-#         --build --install --with-edg-repo || true
-
-# RUN [ "$IMAGE_TYPE" == "prod" ] \
-#         && PREFIX="/usr/rose-git" ./rebuild.sh --prepare \
-#         --build --install --with-edg-repo --reset
-
-
 RUN apt-get update
 RUN apt-get install libicu60
 
@@ -151,8 +127,6 @@ COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
 
 USER root
 RUN chown -R build:build /home/build/
-#        && chmod -R 755 /home/build/
-# todo check
 
 # Change user and set entry PWD
 USER build
