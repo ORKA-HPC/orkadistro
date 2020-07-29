@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-IMAGE_NAME="${IMAGE_NAME:-"orkadistro"}"
-IMAGE_TAG="${IMAGE_TAG:-latest}"
+IMAGE_NAME="${IMAGE_NAME:-"orkadistro-$(sha256sum <(echo $PWD) | cut -c 1-8)"}"
 IMAGE_TYPE="dev"
 
-# EDG_ACCESS_TOKEN="${EDG_ACCESS_TOKEN:-$(pass fau/orka/edgAccessToken)}"
-# ROSE_ACCESS_TOKEN="${ROSE_ACCESS_TOKEN:-$(pass fau/orka/roseAccessToken)}"
 
 VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
 DOCKER_PUSH_PATH="i2git.cs.fau.de:5005/orka/dockerfiles"
@@ -22,21 +19,9 @@ while [ "${1:-}" != "" ]; do
             shift
             MAX_CORES="$1"
             ;;
-        # "--image-type" | "-i")
-        #     shift
-        #     IMAGE_TYPE="${1}"
-        #     ;;
         "--push-image" | "-p")
             PUSH_IMAGE=true
             ;;
-        # "--rose-access-token" | "-r")
-        #     shift
-        #     ROSE_ACCESS_TOKEN="$1"
-        #     ;;
-        # "--edg-access-token" | "-e")
-        #     shift
-        #     EDG_ACCESS_TOKEN="$1"
-        #     ;;
         *)
             echo [ WARNING: unknown flag ]
             shift
@@ -45,20 +30,7 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-# [ "$IMAGE_TYPE" = "dev" -o "$IMAGE_TYPE" = "dev-edg" -o "$IMAGE_TYPE" = "prod" ]  || {
-#     echo [ $IMAGE_TYPE is wrong ]
-#     exit 1
-# }
-
-DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TYPE-$IMAGE_TAG"
-
-# echo building docker with USER_ID="$USER_ID" \
-#        IMAGE_TYPE="$IMAGE_TYPE" ARG_EDG_ACCESS_TOKEN="$EDG_ACCESS_TOKEN" \
-#        ARG_ROSE_ACCESS_TOKEN="$ROSE_ACCESS_TOKEN" VIVADO_VERSION="${VIVADO_VERSION}" \
-
-       # --build-arg IMAGE_TYPE="$IMAGE_TYPE" \
-       # --build-arg ARG_EDG_ACCESS_TOKEN="$EDG_ACCESS_TOKEN" \
-       # --build-arg ARG_ROSE_ACCESS_TOKEN="$ROSE_ACCESS_TOKEN" \
+DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TYPE"
 
 docker build \
        --build-arg USER_ID="$USER_ID" \

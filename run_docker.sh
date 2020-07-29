@@ -12,8 +12,8 @@ function print_help(){
 }
 
 
-DOCKER_TAG="${DOCKER_TAG:-"dev-latest"}"
-DOCKER_NAME="${DOCKER_NAME:-orkadistro}"
+DOCKER_TAG="${DOCKER_TAG:-"latest"}"
+DOCKER_NAME="${DOCKER_NAME:-"orkadistro-$(sha256sum <(echo $PWD) | cut -c 1-8)"}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/usr/Xilinx"}"
