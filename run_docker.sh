@@ -37,17 +37,27 @@ exec_into_container="false"
 stop_and_unmount="false"
 run_in_background="false"
 stop_remove_and_unmount="false"
+exec_non_interactive="false"
+unmount="false"
 
 while [ "${1:-}" != "" ]; do
     case "$1" in
         "--stop-and-unmount" | "-q")
             stop_and_unmount="true"
             ;;
+        "--unmount" | "-q")
+            unmount="true"
+            ;;
         "--stop-remove-and-unmount" | "-q")
             stop_remove_and_unmount="true"
             ;;
         "--exec-shell" | "-e")
             exec_into_container="true"
+            ;;
+        "--exec-non-interactive")
+            exec_non_interactive="true"
+            shift
+            break;
             ;;
         "--run-background" | "-r")
             run_in_background="true"
@@ -112,4 +122,12 @@ function launch_container_background() {
 [ "${exec_into_container}" == "true" ] && {
     docker exec -u build -it $DOCKER_NAME-$DOCKER_TAG bash -l || \
         echo [could not open shell in container, probably you need to start it first. exit]
+}
+
+[ "${exec_non_interactive}" == "true" ] && {
+    docker exec -u build -it $DOCKER_NAME-$DOCKER_TAG "$@"
+}
+
+[ "${unmount}" == "true" ] && {
+    unmount_boardfiles_overlay
 }
