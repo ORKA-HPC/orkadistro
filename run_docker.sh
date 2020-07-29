@@ -6,6 +6,7 @@ function print_help(){
     echo "--stop-and-unmount or -q"
     echo "--stop-remove-and-unmount or -q"
     echo "--exec-shell or -e"
+    echo "--unmount"
     echo "--run-background -r"
     echo "--help or -h"
 }
