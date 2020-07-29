@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 IMAGE_NAME="${IMAGE_NAME:-"orkadistro-$(sha256sum <(echo $PWD) | cut -c 1-8)"}"
-IMAGE_TYPE="dev"
+IMAGE_TAG="latest"
 
 
 VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
@@ -30,7 +30,7 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TYPE"
+DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TAG"
 
 docker build \
        --build-arg USER_ID="$USER_ID" \
