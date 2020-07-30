@@ -12,8 +12,9 @@ function print_help(){
 }
 
 
-DOCKER_TAG="${DOCKER_TAG:-"latest"}"
-DOCKER_NAME="${DOCKER_NAME:-"orkadistro-$(sha256sum <(echo $PWD) | cut -c 1-8)"}"
+IMAGE_TAG="${IMAGE_TAG:-"latest"}"
+IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
+CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(echo $PWD) | cut -c 1-8)"}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/usr/Xilinx"}"
@@ -94,24 +95,24 @@ function unmount_boardfiles_overlay() {
 
 function launch_container_background() {
     docker run \
-         --name $DOCKER_NAME-$DOCKER_TAG -t -d \
+         --name $CONTAINER_NAME -t -d \
          -v $PWD:/mnt \
          -v $PWD/orkaevolution:/home/build/orkaevolution \
          -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
          -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
          -v $PWD/roserebuild:/home/build/roserebuild \
          -v $PWD/"$mnt_point":"$docker_mnt_point" \
-         $DOCKER_NAME:$DOCKER_TAG
+         $IMAGE_NAME:$IMAGE_TAG
 }
 
 [ "${stop_and_unmount}" == "true" ] && {
-    docker stop $DOCKER_NAME-$DOCKER_TAG
+    docker stop $IMAGE_NAME-$IMAGE_TAG
     unmount_boardfiles_overlay
 }
 
 [ "${stop_remove_and_unmount}" == "true" ] && {
-    docker stop $DOCKER_NAME-$DOCKER_TAG
-    docker rm $DOCKER_NAME-$DOCKER_TAG
+    docker stop $IMAGE_NAME-$IMAGE_TAG
+    docker rm $IMAGE_NAME-$IMAGE_TAG
     unmount_boardfiles_overlay
 }
 
@@ -121,12 +122,12 @@ function launch_container_background() {
 }
 
 [ "${exec_into_container}" == "true" ] && {
-    docker exec -u build -it $DOCKER_NAME-$DOCKER_TAG bash -l || \
+    docker exec -u build -it $CONTAINER_NAME bash -l || \
         echo [could not open shell in container, probably you need to start it first. exit]
 }
 
 [ "${exec_non_interactive}" == "true" ] && {
-    docker exec -u build -it $DOCKER_NAME-$DOCKER_TAG "$@"
+    docker exec -u build -it $IMAGE_NAME-$IMAGE_TAG "$@"
 }
 
 [ "${unmount}" == "true" ] && {
