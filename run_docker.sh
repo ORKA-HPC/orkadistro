@@ -106,13 +106,13 @@ function launch_container_background() {
 }
 
 [ "${stop_and_unmount}" == "true" ] && {
-    docker stop $IMAGE_NAME-$IMAGE_TAG
+    docker stop $CONTAINER_NAME
     unmount_boardfiles_overlay
 }
 
 [ "${stop_remove_and_unmount}" == "true" ] && {
-    docker stop $IMAGE_NAME-$IMAGE_TAG
-    docker rm $IMAGE_NAME-$IMAGE_TAG
+    docker stop $CONTAINER_NAME
+    docker rm $CONTAINER_NAME
     unmount_boardfiles_overlay
 }
 
@@ -127,7 +127,7 @@ function launch_container_background() {
 }
 
 [ "${exec_non_interactive}" == "true" ] && {
-    docker exec -u build -it $IMAGE_NAME-$IMAGE_TAG "$@"
+    docker exec -u build -it $CONTAINER_NAME "$@"
 }
 
 [ "${unmount}" == "true" ] && {
