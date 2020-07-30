@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-export IMAGE_NAME="$1"
-export DOCKER_NAME="$1"
+git submodule sync --recursive
+git submodule update --init --recursive
 
 ./rebuild_docker.sh
 ./run_docker.sh -r
