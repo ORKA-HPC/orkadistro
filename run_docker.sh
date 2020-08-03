@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-
 function print_help(){
     echo "flags:"
-    echo "--stop-and-unmount or -q"
-    echo "--stop-remove-and-unmount or -q"
+    echo "--stop or -q"
+    echo "--stop-and-remove"
     echo "--exec-shell or -e"
-    echo "--unmount"
-    echo "--run-background -r"
+    echo "--exec-non-interactive"
+    echo "--start or -r"
     echo "--help or -h"
 }
-
 
 IMAGE_TAG="${IMAGE_TAG:-"latest"}"
 IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
@@ -35,23 +33,19 @@ lower_dir="${XILINX_HOST_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board
 docker_mnt_point="${XILINX_DOCKER_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board_files/"
 
 ## cli "parsing"
+stop_container="false"
+stop_and_remove_container="false"
 exec_into_container="false"
-stop_and_unmount="false"
-run_in_background="false"
-stop_remove_and_unmount="false"
 exec_non_interactive="false"
-unmount="false"
+start_container="false"
 
 while [ "${1:-}" != "" ]; do
     case "$1" in
-        "--stop-and-unmount" | "-q")
-            stop_and_unmount="true"
+        "--stop" | "-q")
+            stop_container="true"
             ;;
-        "--unmount" | "-q")
-            unmount="true"
-            ;;
-        "--stop-remove-and-unmount" | "-q")
-            stop_remove_and_unmount="true"
+        "--stop-and-remove")
+            stop_and_remove_container="true"
             ;;
         "--exec-shell" | "-e")
             exec_into_container="true"
@@ -61,8 +55,8 @@ while [ "${1:-}" != "" ]; do
             shift
             break;
             ;;
-        "--run-background" | "-r")
-            run_in_background="true"
+        "--start" | "-r")
+            start_container="true"
             ;;
         "--help" | "-h")
             print_help
@@ -94,6 +88,7 @@ function unmount_boardfiles_overlay() {
 }
 
 function launch_container_background() {
+    echo exec cmd [docker run --name $CONTAINER_NAME ...]
     docker run \
          --name $CONTAINER_NAME -t -d \
          -v $PWD:/mnt \
@@ -105,31 +100,42 @@ function launch_container_background() {
          $IMAGE_NAME:$IMAGE_TAG
 }
 
-[ "${stop_and_unmount}" == "true" ] && {
-    docker stop $CONTAINER_NAME
-    unmount_boardfiles_overlay
-}
-
-[ "${stop_remove_and_unmount}" == "true" ] && {
-    docker stop $CONTAINER_NAME
-    docker rm $CONTAINER_NAME
-    unmount_boardfiles_overlay
-}
-
-[ "${run_in_background}" == "true" ] && {
+function start_container() {
+    echo [start container]
     setup_board_files_overlay_mount
-    launch_container_background
+    launch_container_background || {
+        echo [run_docker.sh] trying to start suspended container
+        docker container start $CONTAINER_NAME
+    }
+}
+
+function stop_container() {
+    echo [stop container]
+    docker stop $CONTAINER_NAME
+    unmount_boardfiles_overlay
+}
+
+[ "${start_container}" == "true" ] && {
+    start_container
 }
 
 [ "${exec_into_container}" == "true" ] && {
     docker exec -u build -it $CONTAINER_NAME bash -l || \
-        echo [could not open shell in container, probably you need to start it first. exit]
+        echo [could not open shell in container, \
+                    probably you have not started it yet]
 }
 
 [ "${exec_non_interactive}" == "true" ] && {
-    docker exec -u build -it $CONTAINER_NAME "$@"
+    docker exec -u build -it $CONTAINER_NAME "$@" || \
+        echo [could not run command in container, \
+                    probably you have not started it yet]
 }
 
-[ "${unmount}" == "true" ] && {
-    unmount_boardfiles_overlay
+[ "${stop_container}" == "true" ] && {
+    stop_container
+}
+
+[ "${stop_and_remove_container}" == "true" ] && {
+    stop_container
+    docker rm $CONTAINER_NAME
 }
