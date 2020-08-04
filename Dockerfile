@@ -41,7 +41,7 @@ RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7
 RUN apt-get -y install software-properties-common
 RUN apt-add-repository ppa:git-core/ppa -y
 RUN apt-get -y update
-RUN apt-get -y install git
+RUN apt-get -y install git ccache
 
 # Add build user
 RUN apt-get install -y sudo
