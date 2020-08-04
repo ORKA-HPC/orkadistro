@@ -23,6 +23,12 @@ XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
     # exit 1
 }
 
+roserebuild_dir="roserebuild"
+
+ccache_symlink_dir="$PWD/${roserebuild_dir}/ccache_symlinks"
+ccache_dir="/home/build/${roserebuild_dir}/.ccache"
+ccache_maxsize="20G"
+
 vivado_board_files_dir="vivado-boards/new/board_files/"
 
 upper_dir="./$vivado_board_files_dir"
@@ -38,6 +44,8 @@ stop_and_remove_container="false"
 exec_into_container="false"
 exec_non_interactive="false"
 start_container="false"
+
+export PATH="${ccache_symlink_dir}:$PATH"
 
 while [ "${1:-}" != "" ]; do
     case "$1" in
@@ -70,6 +78,14 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
+function setup_ccache_symlinks() {
+    (
+        cd ${ccache_symlink_dir}
+        ln -sf /usr/bin/ccache gcc-7
+        ln -sf /usr/bin/ccache g++-7
+    )
+}
+
 function setup_board_files_overlay_mount() {
     mkdir -p \
           __vivado_boardfiles_overlay_work_dir \
@@ -91,11 +107,14 @@ function launch_container_background() {
     echo exec cmd [docker run --name $CONTAINER_NAME ...]
     docker run \
          --name $CONTAINER_NAME -t -d \
+         --env CCACHE_DIR="${ccache_dir}" \
+         --env CCACHE_MAXSIZE="${ccache_maxsize}" \
+         --env CCACHE_LIMIT_MULTIPLE=1.0 \
          -v $PWD:/mnt \
          -v $PWD/orkaevolution:/home/build/orkaevolution \
          -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
          -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
-         -v $PWD/roserebuild:/home/build/roserebuild \
+         -v $PWD/${roserebuild_dir}:/home/build/${roserebuild_dir} \
          -v $PWD/"$mnt_point":"$docker_mnt_point" \
          $IMAGE_NAME:$IMAGE_TAG
 }
