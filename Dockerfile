@@ -41,7 +41,7 @@ RUN apt-get -y install git ccache
 ARG ORKA_HPC_CCACHE_SYMLINK_DIR="/usr/ccache-symlinks"
 RUN mkdir -p $ORKA_HPC_CCACHE_SYMLINK_DIR
 RUN cd $ORKA_HPC_CCACHE_SYMLINK_DIR && \
-        ln -s $(which ccache) gcc-7
+        ln -s $(which ccache) gcc-7 &&  \
         ln -s $(which ccache) g++-7
 
 ENV ORKA_HPC_CCACHE_SYMLINK_DIR=$ORKA_HPC_CCACHE_SYMLINK_DIR
@@ -50,6 +50,8 @@ ENV ORKA_HPC_CCACHE_SYMLINK_DIR=$ORKA_HPC_CCACHE_SYMLINK_DIR
 ENV CCACHE_DIR=/home/build/roserebuild/.ccache
 ENV CCACHE_MAXSIZE=20G
 ENV CCACHE_LIMIT_MULTIPLE=1.0
+
+COPY cfg_files/profile_d_ccache.sh /etc/profile.d/ccache.sh
 
 # Add build user
 RUN apt-get install -y sudo
