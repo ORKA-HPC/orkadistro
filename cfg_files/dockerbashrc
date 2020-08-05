@@ -87,7 +87,7 @@ fi
 
 #
 # ccache configuration
-#
+
 ORKA_HPC_CCACHE_ENABLE="${ORKA_HPC_CCACHE_ENABLE:-"true"}"
 if [ "$ORKA_HPC_CCACHE_ENABLE" = "true" ]; then
    export PATH="$ORKA_HPC_CCACHE_SYMLINK_DIR:$PATH"
