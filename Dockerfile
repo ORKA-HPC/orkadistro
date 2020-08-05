@@ -4,17 +4,11 @@ FROM ubuntu:bionic
 # You can’t change ENV directly during the build
 ARG VIVADO_VERSION=2018.2
 ARG ARG_MAX_CORES=""
-# ARG ARG_EDG_ACCESS_TOKEN=fail
-# ARG ARG_ROSE_ACCESS_TOKEN=fail
 ARG USER_ID=1000
-# ARG IMAGE_TYPE=fail
 # PLEASE APT SHUT uuuuuUP!!
 ARG DEBIAN_FRONTEND=noninteractive
 
-# ENV EDG_ACCESS_TOKEN=$ARG_EDG_ACCESS_TOKEN
-# ENV ROSE_ACCESS_TOKEN=$ARG_ROSE_ACCESS_TOKEN
 ENV MAX_CORES=$ARG_MAX_CORES
-
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -42,6 +36,20 @@ RUN apt-get -y install software-properties-common
 RUN apt-add-repository ppa:git-core/ppa -y
 RUN apt-get -y update
 RUN apt-get -y install git ccache
+
+# create link dir for ccache
+ARG ORKA_HPC_CCACHE_SYMLINK_DIR="/usr/ccache-symlinks"
+RUN mkdir -p $ORKA_HPC_CCACHE_SYMLINK_DIR
+RUN cd $ORKA_HPC_CCACHE_SYMLINK_DIR && \
+        ln -s $(which ccache) gcc-7
+        ln -s $(which ccache) g++-7
+
+ENV ORKA_HPC_CCACHE_SYMLINK_DIR=$ORKA_HPC_CCACHE_SYMLINK_DIR
+
+# ccache config
+ENV CCACHE_DIR=/home/build/roserebuild/.ccache
+ENV CCACHE_MAXSIZE=20G
+ENV CCACHE_LIMIT_MULTIPLE=1.0
 
 # Add build user
 RUN apt-get install -y sudo
