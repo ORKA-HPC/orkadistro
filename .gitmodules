@@ -10,3 +10,7 @@
 [submodule "roserebuild"]
 	path = roserebuild
 	url = git@i2git.cs.fau.de:personalorka/utilities/roserebuild.git
+[submodule "tapasco"]
+	path = tapasco
+	url = https://github.com/esa-tu-darmstadt/tapasco.git
+	branch = develop
