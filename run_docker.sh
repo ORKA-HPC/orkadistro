@@ -97,6 +97,7 @@ function launch_container_background() {
          -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
          -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
          -v $PWD/roserebuild:/home/build/roserebuild \
+         -v $PWD/tapasco:/home/build/tapasco \
          -v $PWD/"$mnt_point":"$docker_mnt_point" \
          $IMAGE_NAME:$IMAGE_TAG
 }
@@ -104,7 +105,7 @@ function launch_container_background() {
 function start_container() {
     echo [start container]
     setup_board_files_overlay_mount
-    launch_container_background || {
+    launch_container_background 2>/dev/null || {
         echo [run_docker.sh] trying to start suspended container
         docker container start $CONTAINER_NAME
     }

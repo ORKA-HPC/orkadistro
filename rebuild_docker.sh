@@ -20,6 +20,10 @@ while [ "${1:-}" != "" ]; do
         "--push-image" | "-p")
             PUSH_IMAGE=true
             ;;
+        "--name")
+            echo [ IMAGE_NAME: $IMAGE_NAME ]
+	    exit
+            ;;
         *)
             echo [ WARNING: unknown flag ]
             shift
@@ -39,6 +43,6 @@ docker build \
 
 if [ "$PUSH_IMAGE" == "true" ]; then
     echo [ Push image "${DOCKER_COMPOUND_TAG}" to "${DOCKER_PUSH_PATH}" ]
-    docker tag "$IMAGE_NAME" "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
+    # docker tag "$DOCKER_COMPOUND_TAG" "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
     docker push "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
 fi

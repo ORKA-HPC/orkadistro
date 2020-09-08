@@ -86,34 +86,37 @@ RUN apt-get update
 RUN apt-get install libicu60
 
 USER root
-# Build and Install tapasco
+
+# Build and Install tapasco requirements
 RUN apt-get install -y \
     build-essential linux-headers-generic python \
     cmake libelf-dev libncurses-dev git rpm \
     unzip git zip findutils curl
+
 USER build
 WORKDIR /home/build
-ARG TAPASCO_TAG=2019.10
-RUN git clone --branch \
-        $TAPASCO_TAG https://github.com/esa-tu-darmstadt/tapasco.git
+# ARG TAPASCO_TAG=2019.10
+# RUN git clone --branch \
+#         $TAPASCO_TAG https://github.com/esa-tu-darmstadt/tapasco.git
 
 ## build tapasco toolflow
-USER build
-RUN mkdir -p tapasco-workspace
-WORKDIR /home/build/tapasco-workspace
-RUN bash -c '../tapasco/tapasco-init.sh'
-RUN bash -c '. tapasco-setup.sh && tapasco-build-toolflow'
+# USER build
+# RUN mkdir -p tapasco-workspace
+# WORKDIR /home/build/tapasco-workspace
+# RUN bash -c '../tapasco/tapasco-init.sh'
+# RUN bash -c '. tapasco-setup.sh && tapasco-build-toolflow'
 
 ## build tapasco libs
-RUN source tapasco-setup.sh && cd ../tapasco/runtime && { cmake . && make -j$MAX_CORES; }
-USER root
-RUN source tapasco-setup.sh && cd ../tapasco/runtime && make install
+# RUN source tapasco-setup.sh && cd ../tapasco/runtime && { cmake . && make -j$MAX_CORES; }
+# USER root
+# RUN source tapasco-setup.sh && cd ../tapasco/runtime && make install
 
 ## Make sure tapasco is in PATH (requires a login shell)!
-WORKDIR /home/build/tapasco-workspace
-RUN cp tapasco-setup.sh /etc/profile.d/tapasco.sh
+# WORKDIR /home/build/tapasco-workspace
+# RUN cp tapasco-setup.sh /etc/profile.d/tapasco.sh
 
 # Install ORKA-HPC dependencies
+USER root
 RUN apt-get update -y
 RUN apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format
 RUN apt-get install -y tcl-dev uuid-runtime
