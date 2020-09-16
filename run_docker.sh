@@ -12,7 +12,7 @@ function print_help(){
 
 IMAGE_TAG="${IMAGE_TAG:-"latest"}"
 IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
-CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(echo $PWD) | cut -c 1-8)"}"
+CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(realpath $PWD) | cut -c 1-8)"}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/usr/Xilinx"}"
@@ -98,6 +98,7 @@ function launch_container_background() {
          -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
          -v $PWD/roserebuild:/home/build/roserebuild \
          -v $PWD/tapasco:/home/build/tapasco \
+         -v $PWD/synthBin:/home/build/synthBin \
          -v $PWD/"$mnt_point":"$docker_mnt_point" \
          $IMAGE_NAME:$IMAGE_TAG
 }
@@ -128,6 +129,7 @@ function stop_container() {
 }
 
 [ "${exec_non_interactive}" == "true" ] && {
+    echo run [ "$@" ]
     docker exec -u build -it $CONTAINER_NAME "$@" || \
         echo [could not run command in container, \
                     probably you have not started it yet]
