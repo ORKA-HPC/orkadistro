@@ -56,6 +56,15 @@ while [ "${1:-}" != "" ]; do
             shift
             break;
             ;;
+        "--info")
+            echo "IMAGE_TAG: $IMAGE_TAG"
+            echo "IMAGE_NAME: $IMAGE_NAME"
+            echo "CONTAINER_NAME: $CONTAINER_NAME"
+            echo Note that you can override these variables
+
+            exit 0
+            break
+            ;;
         "--start" | "-r")
             start_container="true"
             ;;
@@ -107,7 +116,16 @@ function start_container() {
     echo [start container]
     setup_board_files_overlay_mount
     launch_container_background 2>/dev/null || {
-        echo [run_docker.sh] trying to start suspended container
+        echo [run_docker.sh] Creating and running the docker container failed.
+        echo "               (Either because is is was already created and is now suspended"
+        echo "                or because you just pulled this repo)"
+        echo "               In the case you have recently pulled orkadistro,"
+        echo "               the image of this suspended container might have changed."
+        echo "                 Save all your changes from the container's filesystem"
+        echo "                 - either by doing $ docker commit <yourrepo>/<imagename>:<tag>"
+        echo "                 - or by copying them to the /mnt (inside the running container)"
+        echo "                   (this is mapped to $PWD)"
+        echo [run_docker.sh] Trying to start the suspended container...
         docker container start $CONTAINER_NAME
     }
 }
