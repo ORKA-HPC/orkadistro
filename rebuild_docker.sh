@@ -38,7 +38,11 @@ docker build \
        --build-arg USER_ID="$USER_ID" \
        --build-arg ARG_MAX_CORES="$MAX_CORES" \
        --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
-       -t "${DOCKER_COMPOUND_TAG}" . || exit 1
+       -t "${DOCKER_COMPOUND_TAG}" . || {
+    echo "[rebuild_docker.sh] Docker build failed."
+    echo "[rebuild_docker.sh] Note that you MUST stop the docker container ($ ./run_docker -q)"
+    echo "[rebuild_docker.sh] before running this script using "
+}
 
 
 if [ "$PUSH_IMAGE" == "true" ]; then
