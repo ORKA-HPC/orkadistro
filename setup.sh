@@ -26,6 +26,7 @@ if [ "$CLEAN_BUILD_ROSE" = 1 ]; then
     ( cd roserebuild && ./rebuild.sh --prepare --with-edg-repo )
 
 
+
     echo [build rose]
     ./run_docker.sh -r -q --exec-non-interactive \
 	            bash -l -c "cd roserebuild; MAX_CORES=4 ./rebuild.sh --clean -b -i"
