@@ -124,3 +124,5 @@ USER build
 WORKDIR /home/build
 
 COPY cfg_files/dockerbashrc /home/build/.profile
+
+ENV PATH="/home/build/fpgainfrastructure/integration_scripts:$PATH"
