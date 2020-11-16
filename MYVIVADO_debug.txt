@@ -1,0 +1,49 @@
+LD_LIBRARY_PATH=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:
+LESSCLOSE=/usr/bin/lesspipe %s %s
+TapascoTLKM_DIR=/home/build/tapasco-workspace/build/install/usr/local/share/Tapasco/cmake/
+CCACHE_MAXSIZE=20G
+HOSTNAME=7d15a000756c
+OLDPWD=/home/build/orkaevolution/Z_completeFlowTests/targetDoubleArray
+TAPASCO_WORK_DIR=/home/build/tapasco-workspace
+TapascoPlatform_DIR=/home/build/tapasco-workspace/build/install/usr/local/share/Tapasco/cmake/
+R TAPASCO_HOME_TOOLFLOW=/home/build/tapasco/toolflow
+XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
+R TAPASCO_HOME=/home/build/tapasco
+PWD=/home/build
+HOME=/home/build
+CCACHE_DIR=/home/build/roserebuild/.ccache
+ORKA_HPC_CCACHE_SYMLINK_DIR=/usr/ccache-symlinks
+R MYVIVADO=
+MAX_CORES=
+TERM=xterm
+TapascoCommon_DIR=/home/build/tapasco-workspace/build/install/usr/local/share/Tapasco/cmake/
+TAPASCO_HOME_RUNTIME=/home/build/tapasco/runtime
+SHLVL=3
+MANPATH=:/home/build/tapasco/man:/home/build/tapasco/man
+CCACHE_LIMIT_MULTIPLE=1.0
+TAPASCO_HOME_TCL=/home/build/tapasco/toolflow/vivado
+PATH=/usr/ccache-symlinks:/home/build/tapasco/toolflow/bin:/home/build/tapasco/runtime/bin:/home/build/tapasco-workspace/build/install/usr/local/bin/:/home/build/tapasco/toolflow/scala/build/install/tapasco/bin:/usr/ccache-symlinks:/usr/ccache-symlinks:/home/build/tapasco/toolflow/bin:/home/build/tapasco/runtime/bin:/home/build/tapasco-workspace/build/install/usr/local/bin/:/home/build/tapasco/toolflow/scala/build/install/tapasco/bin:/usr/ccache-symlinks:/home/build/fpgainfrastructure/hw/xilinx:/home/build/fpgainfrastructure/hw/orka_hw_configurator:/home/build/fpgainfrastructure/hw/build_ip:/usr/Xilinx/Vivado/2018.2/bin:/usr/rose/bin:/usr/jre/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PS1=\[[1m\]\[\033[38;5;197m\]Orkadistro-Docker(cont-id:7d15a000756c)\[(B[m\]\[\033[38;5;25m\]:\[(B[m\]\[\033[38;5;14m\]\w\[(B[m\]\n\[(B[m\]\[[1m\]\[\033[38;5;208m\]\u\[(B[m\]\$\[(B[m\] 
+R Tapasco_DIR=/home/build/tapasco-workspace/build/install/usr/local/share/Tapasco/cmake/
+XILINX_PATH=:/home/build/tapasco/toolflow/vivado/common
+LESSOPEN=| /usr/bin/lesspipe %s
+_=/usr/bin/printenv
+
+
+= versuch 2 =
+
+- XILINX_PATH
+- MYVIVADO
+- TAPASCO_HOME_TCL
+- TAPASCO_HOME_TOOLFLOW
+
+=> success
+
+= reduktion =
+
+- XILINX_PATH
+- MYVIVADO
+
+Löscht man nur eins => sourced vivado noch irgendeinen scheiß.
+
+Scheint eine Möglichkeit zu sein sich in vivado reinzuhooken.
