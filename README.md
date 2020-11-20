@@ -4,7 +4,7 @@ Git URL: git@i2git.cs.fau.de:orka/dockerfiles/orkadistro.git
 
 ## Requirements
 
-- Docker v1.13.1
+- Docker v19.0 or higher
 - You need to get a Research license from EDG
   1. Contact `info@edg.com`
   2. Write that you need access to the EDG C++ frontend
@@ -18,6 +18,7 @@ Git URL: git@i2git.cs.fau.de:orka/dockerfiles/orkadistro.git
 - `./setup.sh` does a clean build of the docker container.
   It also builds ROSE and orkaevolution 
   (both _inside_ the docker container).
+  See section `Frequent Issues` if this script fails.
 - `./run_docker.sh -r -e -q` starts the docker container and 
   presents a shell to you running in the container. After
   you close that shell (using C-d) it suspends the container.
@@ -68,6 +69,22 @@ be gone after the shell exits!
 
 - You need to run `run_docker.sh --stop-and-unmount` before
   you can `./rebuild.sh` the image again.
+
+- `./setup.sh` fails while building rose. Still on the host
+  shell perform the following comands:
+    - `cd roserebuild`
+    - `./rebuild.sh --prepare --with-edg-repo`
+    - `cd ..`
+    - `./run_docker.sh -r -e` this will start the docker image
+    - `cd roserebuild`
+    - `MAX_CORES=4 ./rebuild.sh --clean -b` ignore errors
+    - `./rebuild.sh -i`
+    - `cd ../fpgainfrastructure/hw/orka_hw_configurator`
+    - `make clean && make`
+    - `cd ../../../orkaevolution`
+    - `cmake .`
+    - `make -j`
+
 
 ## Notes and References
 
