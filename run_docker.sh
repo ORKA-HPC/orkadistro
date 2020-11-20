@@ -85,14 +85,14 @@ function setup_board_files_overlay_mount() {
           __vivado_boardfiles_overlay_work_dir \
           __vivado_boardfiles_overlay_mnt_point
 
-    sudo umount -q "$mnt_point"
+    sudo umount "$mnt_point"
     sudo mount -t overlay overlay \
          -o lowerdir="$lower_dir",upperdir="$upper_dir",workdir="$work_dir" \
          "$mnt_point"
 }
 
 function unmount_boardfiles_overlay() {
-    sudo umount -q "$mnt_point"
+    sudo umount "$mnt_point"
     # we delete this so that ./rebuild_docker.sh can work again.
     rm -rf "$work_dir"
 }
