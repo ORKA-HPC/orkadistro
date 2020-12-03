@@ -18,6 +18,3 @@ Examples:
 Please make sure you have vivado in your path and the correct license server set:
 export XILINXD_LICENSE_FILE=27000@lm-xilinx.rrz.uni-koeln.de
 export XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
-
-
-Running the host binary inside the docker container doesn't work (yet?).

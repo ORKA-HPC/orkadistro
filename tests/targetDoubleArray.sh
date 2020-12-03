@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 
-target_dir="$PWD/../orkaevolution/Z_completeFlowTests/targetDoubleArray"
+target_dir_postfix="orkaevolution/Z_completeFlowTests/targetDoubleArray"
 
 curr="$PWD"
-orkadistrobase="$PWD/.."
-orkaevo="${orkadistrobase}/orkaevolution/orkaEvolution"
-xomp_common="${orkadistrobase}/orkaevolution/orka_xomp_common"
-orka_hw="${orkadistrobase}/fpgainfrastructure/hw"
-orka_gd="${orkadistrobase}/fpgainfrastructure/sw/OrkaGenericDriver/src"
+orkadistro_base_host="$PWD/../"
+orkadistro_base_docker="/home/build/"
+target_dir_host="${orkadistro_base_host}${target_dir_postfix}"
+target_dir_docker="${orkadistro_base_docker}${target_dir_postfix}"
+orkaevo_docker="${orkadistro_base_docker}/orkaevolution/orkaEvolution"
+xomp_common_host="${orkadistro_base_host}/orkaevolution/orka_xomp_common"
+xomp_common_docker="${orkadistro_base_docker}/orkaevolution/orka_xomp_common"
+orka_hw_host="${orkadistro_base_host}/fpgainfrastructure/hw"
+orka_gd_docker="${orkadistro_base_docker}/fpgainfrastructure/sw/OrkaGenericDriver/src"
 
 
 # read cmd args
@@ -29,43 +33,52 @@ echo "run_host_binary=$run_host_binary"
 
 # build bitstream
 if [[ $build_bitstream -ne 0 ]]; then
-    cd $target_dir
-    ORKA=$orkaevo make -f driver.mk fpgaHardware.bit
+    cd $orkadistro_base_host
+    ./run_docker.sh -r --exec-non-interactive \
+        bash -l -c \
+            "cd $target_dir_docker &&
+            ORKA=$orkaevo_docker make -f driver.mk fpgaHardware.bit"
     cd $curr
 fi
 
 
 # upload bitstream
 if [[ $upload_bitstream -ne 0 ]]; then
-    ${orka_hw}/xilinx/configure_fpga ${target_dir}/bitstream.bit
-    ${orka_hw}/pci_rescan
+    ${orka_hw_host}/xilinx/configure_fpga ${target_dir_host}/bitstream.bit
+    ${orka_hw_host}/pci_rescan
     ls -l /dev/xdma*
 fi
 
 
 # rebuild GD and orka_xomp_common
 if [[ $rebuild_gd -ne 0 ]]; then
-    cd ${orka_gd}
-    make
-    cd $xomp_common
-    make
-    cp llp_impl_ap2.so llp_impl_tpc.so
+    cd $orkadistro_base_host
+    ./run_docker.sh -r --exec-non-interactive \
+        bash -l -c \
+            "cd $orka_gd_docker &&
+            make &&
+            cd $xomp_common_docker &&
+            make &&
+            cp llp_impl_ap2.so llp_impl_tpc.so"
     cd $curr
 fi
 
 
 # build host binary
 if [[ $build_host_binary -ne 0 ]]; then
-    cd $target_dir
-    ORKA=$orkaevo make -f driver.mk hostBinary
+    cd $orkadistro_base_host
+    ./run_docker.sh -r --exec-non-interactive \
+        bash -l -c \
+            "cd $target_dir_docker &&
+            ORKA=$orkaevo_docker make -f driver.mk hostBinary"
     cd $curr
 fi
 
 
 # run host binary
 if [[ $run_host_binary -ne 0 ]]; then
-    cd $target_dir
-    LD_LIBRARY_PATH=$xomp_common ./hostBinary
+    cd $target_dir_host
+    LD_LIBRARY_PATH=$xomp_common_host ./hostBinary
     cd $curr
 fi
 
