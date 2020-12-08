@@ -19,6 +19,11 @@ while [ "${1:-}" != "" ]; do
         "--clean-build-orka")
             CLEAN_BUILD_ORKA=1
             ;;
+        "--after-pull")
+            INSTALL_ROSE=1
+            CLEAN_BUILD_TAPASCO=1
+            CLEAN_BUILD_ORKA=1
+            ;;
         "--init")
             CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
@@ -27,6 +32,9 @@ while [ "${1:-}" != "" ]; do
             ;;
         "--help" | "-h")
             echo "--clean-build-rose"
+            echo "--clean-build-orka"
+            echo "--clean-build-tapasco"
+            echo "--install-rose"
             exit 0
             ;;
         *)
@@ -78,7 +86,7 @@ if [ "$CLEAN_BUILD_TAPASCO" = 1 ]; then
     ./run_docker.sh -r -q --exec-non-interactive \
                     bash -l -c 'cd && cd tapasco-workspace &&
                     . tapasco-setup.sh && cd ../tapasco/runtime &&
-                    { cmake . && make -j$MAX_CORES; }'
+                    { cmake -DCMAKE_C_FLAGS="-fPIC" . && make -j$MAX_CORES; }'
 
     ./run_docker.sh -r -q --exec-non-interactive \
                     bash -l -c 'cd && cd tapasco-workspace &&
