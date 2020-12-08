@@ -93,3 +93,6 @@ if [ "$ORKA_HPC_CCACHE_ENABLE" = "true" ]; then
    export PATH="$ORKA_HPC_CCACHE_SYMLINK_DIR:$PATH"
 fi
 
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+
