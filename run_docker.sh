@@ -20,18 +20,13 @@ XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
 
 [ ! -d $XILINX_HOST_PATH ] && {
     echo $XILINX_HOST_PATH does not exist in host file system
-    # exit 1
+    echo You need to install Xilinx there
+    exit 1
 }
 
-
-vivado_board_files_dir="vivado-boards/new/board_files/"
-
-upper_dir="./$vivado_board_files_dir"
-work_dir="./__vivado_boardfiles_overlay_work_dir"
 mnt_point="./__vivado_boardfiles_overlay_mnt_point"
-lower_dir="${XILINX_HOST_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board_files/"
-
 docker_mnt_point="${XILINX_DOCKER_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board_files/"
+
 
 ## cli "parsing"
 stop_container="false"
@@ -88,10 +83,22 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
+
+work_dir="./__vivado_boardfiles_overlay_work_dir"
+
 function setup_board_files_overlay_mount() {
     mkdir -p \
           __vivado_boardfiles_overlay_work_dir \
           __vivado_boardfiles_overlay_mnt_point
+
+    local vivado_board_files_dir="vivado-boards/new/board_files/"
+    local upper_dir="./$vivado_board_files_dir"
+    local lower_dir="${XILINX_HOST_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board_files/"
+
+    if [ ! -d "$lower_dir" ]; then
+	echo You do not seem to have Xilinx Vivado installed at "$XILINX_HOST_PATH"
+	exit 1
+    fi
 
     sudo umount "$mnt_point"
     sudo mount -t overlay overlay \
