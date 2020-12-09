@@ -3,7 +3,53 @@
 CLEAN_BUILD_ROSE=0
 CLEAN_BUILD_ORKA=0
 CLEAN_BUILD_TAPASCO=0
+PREPARE_ROSE=0
 INSTALL_ROSE=0
+
+function testPrerequisiteChecker() {
+	function fnocker() { echo Docker version 13.03.8; }
+	function fnick() { echo git version 2.25.8; }
+	shopt -s expand_aliases
+	alias git=fnick
+	alias docker=fnocker
+}
+
+# testPrerequisiteChecker
+
+function failIfWrongDockerVersion() {
+	local full_docker_version="$(docker --version | cut -d" " -f 3)"
+	local major_docker_version="$(echo "$full_docker_version" | cut -d"." -f 1)"
+
+	local err_string_docker="You need at least version 19 of docker or higher"
+	if [ "$major_docker_version" -lt 19 ]; then
+		echo $err_string_docker
+		exit 1
+	fi
+}
+
+function failIfWrongGitVersion() {
+	local full_git_version="$(git --version | cut -d" " -f 3)"
+	local major_git_version="$(echo "$full_git_version" | cut -d"." -f 1)"
+	local minor_git_version="$(echo "$full_git_version" | cut -d"." -f 2)"
+
+	local err_string="You need at least version 2.25 of git"
+	if [ "$major_git_version" -lt 2 ]; then
+		echo $err_string
+		exit 1
+	fi
+
+	if [ "$minor_git_version" -lt 25 ]; then
+		echo $err_string
+		exit 1
+	fi
+}
+
+function checkPrerequisites() {
+	failIfWrongGitVersion
+	failIfWrongDockerVersion
+}
+
+checkPrerequisites
 
 while [ "${1:-}" != "" ]; do
     case "$1" in
@@ -28,9 +74,14 @@ while [ "${1:-}" != "" ]; do
             CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
             CLEAN_BUILD_ORKA=1
+	    PREPARE_ROSE=1
             INSTALL_ROSE=1
             ;;
+	"--prepare-rose")
+	    PREPARE_ROSE=1
+	    ;;
         "--help" | "-h")
+            echo "--prepare-rose"
             echo "--clean-build-rose"
             echo "--clean-build-orka"
             echo "--clean-build-tapasco"
@@ -43,17 +94,20 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
+
 echo [submodule setup]
-git submodule sync --recursive
-git submodule update --init --recursive
+git submodule sync --recursive || exit 1
+git submodule update --init --recursive || exit 1
 
 echo [build docker image]
-./rebuild_docker.sh
+./rebuild_docker.sh || exit 1
+
+if [ "$PREPARE_ROSE" = 1 ]; then
+    echo [prepare rose]
+    ( cd roserebuild && ./rebuild.sh --prepare --with-edg-repo ) || exit 1
+fi
 
 if [ "$CLEAN_BUILD_ROSE" = 1 ]; then
-    echo [prepare rose]
-    ( cd roserebuild && ./rebuild.sh --prepare --with-edg-repo )
-
     echo [build rose]
     ./run_docker.sh -r -q --exec-non-interactive \
                     bash -l -c "cd roserebuild; MAX_CORES=4 ./rebuild.sh --clean -b"
