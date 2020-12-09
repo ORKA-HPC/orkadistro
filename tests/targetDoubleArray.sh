@@ -56,9 +56,9 @@ if [[ $rebuild_gd -ne 0 ]]; then
     ./run_docker.sh -r --exec-non-interactive \
         bash -l -c \
             "cd $orka_gd_docker &&
-            make &&
+            make ;
             cd $xomp_common_docker &&
-            make &&
+            make llp_impl_ap2.so ;
             cp llp_impl_ap2.so llp_impl_tpc.so"
     cd $curr
 fi
