@@ -68,6 +68,14 @@ while [ "${1:-}" != "" ]; do
         "--start" | "-r")
             start_container="true"
             ;;
+        "--get-image-name")
+            echo $IMAGE_NAME
+            exit 0
+            ;;
+        "--get-container-name")
+            echo $CONTAINER_NAME
+            exit 0
+            ;;
         "--help" | "-h")
             print_help
             exit
@@ -126,6 +134,7 @@ function start_container() {
         echo "                 - either by doing $ docker commit <yourrepo>/<imagename>:<tag>"
         echo "                 - or by copying them to the /mnt (inside the running container)"
         echo "                   (this is mapped to $PWD)"
+        echo "                 and then stop and remove the container and rebuild it."
         echo [run_docker.sh] Trying to start the suspended container...
         docker container start $CONTAINER_NAME
     }
