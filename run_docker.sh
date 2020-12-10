@@ -24,6 +24,7 @@ XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
     exit 1
 }
 
+work_dir="./__vivado_boardfiles_overlay_work_dir"
 mnt_point="./__vivado_boardfiles_overlay_mnt_point"
 docker_mnt_point="${XILINX_DOCKER_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board_files/"
 
@@ -83,31 +84,22 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-
-work_dir="./__vivado_boardfiles_overlay_work_dir"
-
 function setup_board_files_overlay_mount() {
-    mkdir -p \
-          __vivado_boardfiles_overlay_work_dir \
-          __vivado_boardfiles_overlay_mnt_point
+    echo [setup arty board files overlay mount]
+    mkdir -p "$work_dir" "$mnt_point"
 
     local vivado_board_files_dir="vivado-boards/new/board_files/"
     local upper_dir="./$vivado_board_files_dir"
     local lower_dir="${XILINX_HOST_PATH}/Vivado/${XILINX_VIVADO_VERSION}/data/boards/board_files/"
 
-    if [ ! -d "$lower_dir" ]; then
-	echo You do not seem to have Xilinx Vivado installed at "$XILINX_HOST_PATH"
-	exit 1
-    fi
-
-    sudo umount "$mnt_point"
+    sudo umount "$mnt_point" 2> /dev/null
     sudo mount -t overlay overlay \
          -o lowerdir="$lower_dir",upperdir="$upper_dir",workdir="$work_dir" \
          "$mnt_point"
 }
 
 function unmount_boardfiles_overlay() {
-    sudo umount "$mnt_point"
+    sudo umount "$mnt_point" 2> /dev/null
     # we delete this so that ./rebuild_docker.sh can work again.
     rm -rf "$work_dir"
 }
@@ -165,7 +157,7 @@ function stop_container() {
 
 [ "${exec_non_interactive}" == "true" ] && {
     echo run [ "$@" ]
-    docker exec -u build -it $CONTAINER_NAME "$@" || \
+    docker exec -u build -it $CONTAINER_NAME bash -l -c "$@" || \
         echo [could not run command in container, \
                     probably you have not started it yet]
 }
