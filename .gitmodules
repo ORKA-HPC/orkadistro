@@ -14,3 +14,6 @@
 	path = tapasco
 	url = https://github.com/esa-tu-darmstadt/tapasco.git
 	branch = develop
+[submodule "orkadistrotestenv"]
+	path = orkadistrotestenv
+	url = git@i2git.cs.fau.de:orka/vagrantfiles/orkadistrotestenv.git
