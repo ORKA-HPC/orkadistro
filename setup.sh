@@ -6,6 +6,8 @@ CLEAN_BUILD_TAPASCO=0
 PREPARE_ROSE=0
 INSTALL_ROSE=0
 
+MAX_CORES="${MAX_CORES:-4}"
+
 function testPrerequisiteChecker() {
 	function fnocker() { echo Docker version 13.03.8; }
 	function fnick() { echo git version 2.25.8; }
@@ -110,44 +112,44 @@ fi
 if [ "$CLEAN_BUILD_ROSE" = 1 ]; then
     echo [build rose]
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c "cd roserebuild; MAX_CORES=4 ./rebuild.sh --clean -b"
+                    "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh --clean -b"
 fi
 
 if [ "$INSTALL_ROSE" = 1 ]; then
     echo [install rose]
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c "cd roserebuild; MAX_CORES=4 ./rebuild.sh -i"
+                    "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -i"
 fi
 
 if [ "$CLEAN_BUILD_ORKA" = 1 ]; then
     echo [build orkaevolution]
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c "cd orkaevolution; cmake . ; make clean ; make -j"
+                    "cd orkaevolution; cmake . ; make clean ; make -j"
 fi
 
 
 if [ "$CLEAN_BUILD_TAPASCO" = 1 ]; then
     echo [build tapasco]
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c 'cd && mkdir -p tapasco-workspace &&
+                    'cd && mkdir -p tapasco-workspace &&
                          cd tapasco-workspace &&
                          ../tapasco/tapasco-init.sh'
 
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c 'cd && cd tapasco-workspace &&
+                    'cd && cd tapasco-workspace &&
                     . tapasco-setup.sh && tapasco-build-toolflow'
 
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c 'cd && cd tapasco-workspace &&
+                    "cd && cd tapasco-workspace &&
                     . tapasco-setup.sh && cd ../tapasco/runtime &&
-                    { cmake -DCMAKE_C_FLAGS="-fPIC" . && make -j$MAX_CORES; }'
+                    { cmake -DCMAKE_C_FLAGS='-fPIC' . && make -j$MAX_CORES; }"
 
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c 'cd && cd tapasco-workspace &&
+                    'cd && cd tapasco-workspace &&
                     sudo bash -c ". tapasco-setup.sh &&
                     cd ../tapasco/runtime && make install"'
 
     ./run_docker.sh -r -q --exec-non-interactive \
-                    bash -l -c 'cd && cd tapasco-workspace &&
+                    'cd && cd tapasco-workspace &&
                     sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh'
 fi
