@@ -170,10 +170,13 @@ function cleanBuildTapasco() {
                     sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh'
 }
 
-[ "$CLEAN_BUILD_TAPASCO" = 1 ] && cleanBuildTapasco
-[ "$CLEAN_BUILD_ORKA" = 1 ] && cleanBuildOrka
-[ "$INSTALL_ROSE" = 1 ] && installRose
-[ "$CLEAN_BUILD_ROSE" = 1 ] && cleanBuildRose
+[ "$PREPARE_ORKA_DISTRO" = "1" ] && prepareOrkaDistro
+
 [ "$PREPARE_ROSE" = 1 ] && prepareRose
 [ "$BUILD_DOCKER" = "1" ] && buildDocker
-[ "$PREPARE_ORKA_DISTRO" = "1" ] && prepareOrkaDistro
+
+[ "$CLEAN_BUILD_ROSE" = 1 ] && cleanBuildRose
+[ "$INSTALL_ROSE" = 1 ] && installRose
+[ "$CLEAN_BUILD_TAPASCO" = 1 ] && cleanBuildTapasco
+[ "$CLEAN_BUILD_ORKA" = 1 ] && cleanBuildOrka
+
