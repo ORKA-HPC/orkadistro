@@ -2,7 +2,6 @@
 
 target_dir_postfix="orkaevolution/Z_completeFlowTests/targetDoubleArray"
 
-curr="$PWD"
 orkadistro_base_host="$PWD/../"
 orkadistro_base_docker="/home/build/"
 target_dir_host="${orkadistro_base_host}${target_dir_postfix}"
@@ -33,12 +32,10 @@ echo "run_host_binary=$run_host_binary"
 
 # build bitstream
 if [[ $build_bitstream -ne 0 ]]; then
-    cd $orkadistro_base_host
-    ./run_docker.sh -r --exec-non-interactive \
-        bash -l -c \
-            "cd $target_dir_docker &&
-            ORKA=$orkaevo_docker make -f driver.mk fpgaHardware.bit"
-    cd $curr
+    (cd $orkadistro_base_host &&
+        ./run_docker.sh -r --exec-non-interactive \
+        "cd $target_dir_docker &&
+        ORKA=$orkaevo_docker make -f driver.mk fpgaHardware.bit")
 fi
 
 
@@ -52,34 +49,27 @@ fi
 
 # rebuild GD and orka_xomp_common
 if [[ $rebuild_gd -ne 0 ]]; then
-    cd $orkadistro_base_host
-    ./run_docker.sh -r --exec-non-interactive \
-        bash -l -c \
+    (cd $orkadistro_base_host &&
+        ./run_docker.sh -r --exec-non-interactive \
             "cd $orka_gd_docker &&
             make ;
             cd $xomp_common_docker &&
             make llp_impl_ap2.so ;
-            cp llp_impl_ap2.so llp_impl_tpc.so"
-    cd $curr
+            cp llp_impl_ap2.so llp_impl_tpc.so")
 fi
 
 
 # build host binary
 if [[ $build_host_binary -ne 0 ]]; then
-    cd $orkadistro_base_host
-    ./run_docker.sh -r --exec-non-interactive \
-        bash -l -c \
+    (cd $orkadistro_base_host &&
+        ./run_docker.sh -r --exec-non-interactive \
             "cd $target_dir_docker &&
-            ORKA=$orkaevo_docker make -f driver.mk hostBinary"
-    cd $curr
+            ORKA=$orkaevo_docker make -f driver.mk hostBinary")
 fi
 
 
 # run host binary
 if [[ $run_host_binary -ne 0 ]]; then
-    cd $target_dir_host
-    LD_LIBRARY_PATH=$xomp_common_host ./hostBinary
-    cd $curr
+    (cd $target_dir_host &&
+        LD_LIBRARY_PATH=$xomp_common_host ./hostBinary)
 fi
-
-cd "$curr"
