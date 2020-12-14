@@ -35,9 +35,8 @@ echo "run_host_binary=$run_host_binary"
 if [[ $build_bitstream -ne 0 ]]; then
     cd $orkadistro_base_host
     ./run_docker.sh -r --exec-non-interactive \
-        bash -l -c \
-            "cd $target_dir_docker &&
-            ORKA=$orkaevo_docker make -f driver.mk fpgaHardware.bit"
+        "cd $target_dir_docker &&
+        ORKA=$orkaevo_docker make -f driver.mk fpgaHardware.bit"
     cd $curr
 fi
 
@@ -54,12 +53,11 @@ fi
 if [[ $rebuild_gd -ne 0 ]]; then
     cd $orkadistro_base_host
     ./run_docker.sh -r --exec-non-interactive \
-        bash -l -c \
-            "cd $orka_gd_docker &&
-            make ;
-            cd $xomp_common_docker &&
-            make llp_impl_ap2.so ;
-            cp llp_impl_ap2.so llp_impl_tpc.so"
+        "cd $orka_gd_docker &&
+        make ;
+        cd $xomp_common_docker &&
+        make llp_impl_ap2.so ;
+        cp llp_impl_ap2.so llp_impl_tpc.so"
     cd $curr
 fi
 
@@ -68,9 +66,8 @@ fi
 if [[ $build_host_binary -ne 0 ]]; then
     cd $orkadistro_base_host
     ./run_docker.sh -r --exec-non-interactive \
-        bash -l -c \
-            "cd $target_dir_docker &&
-            ORKA=$orkaevo_docker make -f driver.mk hostBinary"
+        "cd $target_dir_docker &&
+        ORKA=$orkaevo_docker make -f driver.mk hostBinary"
     cd $curr
 fi
 
