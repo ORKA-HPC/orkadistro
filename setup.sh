@@ -112,71 +112,72 @@ done
 
 function prepareOrkaDistro() {
     echo [submodule setup]
-    git submodule sync --recursive || exit 1
-    git submodule update --init --recursive || exit 1
+    git submodule sync --recursive || return 1
+    git submodule update --init --recursive || return 1
 }
 
 function buildDocker() {
     echo [build docker image]
-    ./rebuild_docker.sh || exit 1
+    ./rebuild_docker.sh
 }
 
 function prepareRose() (
     echo [prepare rose]
-    cd roserebuild && ./rebuild.sh --prepare --with-edg-repo || exit 1
+    cd roserebuild && ./rebuild.sh --prepare --with-edg-repo
 )
 
 function cleanBuildRose() {
-    echo [build rose]
-    ./run_docker.sh -r -q --exec-non-interactive \
+    echo [clean build rose]
+    ./run_docker.sh -r --exec-non-interactive \
                     "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh --clean -b"
 }
 
 function installRose() {
     echo [install rose]
-    ./run_docker.sh -r -q --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                     "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -i"
 }
 
 function cleanBuildOrka() {
     echo [build orkaevolution]
-    ./run_docker.sh -r -q --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                     "cd orkaevolution; cmake . ; make clean ; make -j"
 }
 
 function cleanBuildTapasco() {
     echo [build tapasco]
-    ./run_docker.sh -r -q --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                     'cd && mkdir -p tapasco-workspace &&
                          cd tapasco-workspace &&
-                         ../tapasco/tapasco-init.sh'
+                         ../tapasco/tapasco-init.sh' || return 1
 
-    ./run_docker.sh -r -q --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                     'cd && cd tapasco-workspace &&
-                    . tapasco-setup.sh && tapasco-build-toolflow'
+                    . tapasco-setup.sh && tapasco-build-toolflow' || return 1
 
-    ./run_docker.sh -r -q --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                     "cd && cd tapasco-workspace &&
                     . tapasco-setup.sh && cd ../tapasco/runtime &&
-                    { cmake -DCMAKE_C_FLAGS='-fPIC' . && make -j$MAX_CORES; }"
+                    { cmake -DCMAKE_C_FLAGS='-fPIC' . && make -j$MAX_CORES; }" || return 1
 
-    ./run_docker.sh -r -q --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                     'cd && cd tapasco-workspace &&
                     sudo bash -c ". tapasco-setup.sh &&
-                    cd ../tapasco/runtime && make install"'
+                    cd ../tapasco/runtime && make install"' || return 1
 
-    ./run_docker.sh -r -q --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                     'cd && cd tapasco-workspace &&
-                    sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh'
+                    sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh' || return 1
 }
 
-[ "$PREPARE_ORKA_DISTRO" = "1" ] && prepareOrkaDistro
+[ "$PREPARE_ORKA_DISTRO" = "1" ] && { prepareOrkaDistro || exit 1; }
 
-[ "$PREPARE_ROSE" = 1 ] && prepareRose
-[ "$BUILD_DOCKER" = "1" ] && buildDocker
+[ "$PREPARE_ROSE" = 1 ] && { prepareRose || exit 1; }
+[ "$BUILD_DOCKER" = "1" ] && { buildDocker || exit 1; }
 
-[ "$CLEAN_BUILD_ROSE" = 1 ] && cleanBuildRose
-[ "$INSTALL_ROSE" = 1 ] && installRose
-[ "$CLEAN_BUILD_TAPASCO" = 1 ] && cleanBuildTapasco
-[ "$CLEAN_BUILD_ORKA" = 1 ] && cleanBuildOrka
+[ "$CLEAN_BUILD_ROSE" = 1 ] && { cleanBuildRose || exit 1; }
+[ "$INSTALL_ROSE" = 1 ] && { installRose || exit 1; }
+[ "$CLEAN_BUILD_TAPASCO" = 1 ] && { cleanBuildTapasco || exit 1; }
+[ "$CLEAN_BUILD_ORKA" = 1 ] && { cleanBuildOrka || exit 1; }
 
+exit 0

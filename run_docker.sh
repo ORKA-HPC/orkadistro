@@ -36,6 +36,7 @@ exec_into_container="false"
 exec_non_interactive="false"
 start_container="false"
 
+echo [run_docker.sh "$@"]  
 while [ "${1:-}" != "" ]; do
     case "$1" in
         "--stop" | "-q")
@@ -99,9 +100,11 @@ function setup_board_files_overlay_mount() {
 }
 
 function unmount_boardfiles_overlay() {
+    echo [unmount boardfiles overlay]
     sudo umount "$mnt_point" 2> /dev/null
     # we delete this so that ./rebuild_docker.sh can work again.
     rm -rf "$work_dir"
+    return 0
 }
 
 function launch_container_background() {
@@ -135,7 +138,10 @@ function start_container() {
         echo "                   (this is mapped to $PWD)"
         echo "                 and then stop and remove the container and rebuild it."
         echo [run_docker.sh] Trying to start the suspended container...
-        docker container start $CONTAINER_NAME
+        docker container start $CONTAINER_NAME || { 
+		echo Could not start suspended container
+		exit 1
+	}
     }
 }
 
@@ -157,9 +163,11 @@ function stop_container() {
 
 [ "${exec_non_interactive}" == "true" ] && {
     echo run [ "$@" ]
-    docker exec -u build -it $CONTAINER_NAME bash -l -c "$@" || \
-        echo [could not run command in container, \
-                    probably you have not started it yet]
+    docker exec -u build -it $CONTAINER_NAME bash -l -c "$@" || {
+        echo Could not run command in container.
+        echo Probably you have not started it yet or command executed with errorcode
+        exit 1
+    }
 }
 
 [ "${stop_container}" == "true" ] && {
@@ -170,3 +178,5 @@ function stop_container() {
     stop_container
     docker rm $CONTAINER_NAME
 }
+
+exit 0
