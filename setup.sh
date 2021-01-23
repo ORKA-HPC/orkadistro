@@ -9,7 +9,7 @@ PREPARE_ORKA_DISTRO=0
 BUILD_DOCKER=0
 
 MAX_CORES="${MAX_CORES:-4}"
-echo MAX_CORES: $MAX_CORES
+echo Running with MAX_CORES = $MAX_CORES
 
 function testPrerequisiteChecker() {
     function fnocker() { echo Docker version 13.03.8; }
@@ -121,10 +121,10 @@ function buildDocker() {
     ./rebuild_docker.sh
 }
 
-function prepareRose() (
-    echo [prepare rose]
-    cd roserebuild && ./rebuild.sh --prepare --with-edg-repo
-)
+# function prepareRose() (
+#     echo [prepare rose]
+#     cd roserebuild && ./rebuild.sh --prepare
+# )
 
 function cleanBuildRose() {
     echo [clean build rose]
@@ -172,7 +172,7 @@ function cleanBuildTapasco() {
 
 [ "$PREPARE_ORKA_DISTRO" = "1" ] && { prepareOrkaDistro || exit 1; }
 
-[ "$PREPARE_ROSE" = 1 ] && { prepareRose || exit 1; }
+# [ "$PREPARE_ROSE" = 1 ] && { prepareRose || exit 1; }
 [ "$BUILD_DOCKER" = "1" ] && { buildDocker || exit 1; }
 
 [ "$CLEAN_BUILD_ROSE" = 1 ] && { cleanBuildRose || exit 1; }
