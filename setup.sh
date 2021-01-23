@@ -129,7 +129,7 @@ function buildDocker() {
 function cleanBuildRose() {
     echo [clean build rose]
     ./run_docker.sh -r --exec-non-interactive \
-                    "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh --clean -b"
+                    "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -b --clean"
 }
 
 function installRose() {
