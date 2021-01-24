@@ -109,7 +109,6 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-
 function prepareOrkaDistro() {
     echo [submodule setup]
     git submodule sync --recursive || return 1
@@ -120,11 +119,6 @@ function buildDocker() {
     echo [build docker image]
     ./rebuild_docker.sh
 }
-
-# function prepareRose() (
-#     echo [prepare rose]
-#     cd roserebuild && ./rebuild.sh --prepare
-# )
 
 function cleanBuildRose() {
     echo [clean build rose]
@@ -171,10 +165,7 @@ function cleanBuildTapasco() {
 }
 
 [ "$PREPARE_ORKA_DISTRO" = "1" ] && { prepareOrkaDistro || exit 1; }
-
-# [ "$PREPARE_ROSE" = 1 ] && { prepareRose || exit 1; }
 [ "$BUILD_DOCKER" = "1" ] && { buildDocker || exit 1; }
-
 [ "$CLEAN_BUILD_ROSE" = 1 ] && { cleanBuildRose || exit 1; }
 [ "$INSTALL_ROSE" = 1 ] && { installRose || exit 1; }
 [ "$CLEAN_BUILD_TAPASCO" = 1 ] && { cleanBuildTapasco || exit 1; }
