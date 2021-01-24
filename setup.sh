@@ -37,12 +37,12 @@ function failIfWrongGitVersion() {
     local minor_git_version="$(echo "$full_git_version" | cut -d"." -f 2)"
 
     local err_string="You need at least version 2.25 of git"
-    if [ "$major_git_version" -lt 2 ]; then
+    if [ "$major_git_version" -lt 1 ]; then
         echo $err_string
         exit 1
     fi
 
-    if [ "$minor_git_version" -lt 25 ]; then
+    if [ "$minor_git_version" -lt 9 ]; then
         echo $err_string
         exit 1
     fi
