@@ -3,7 +3,6 @@
 CLEAN_BUILD_ROSE=0
 CLEAN_BUILD_ORKA=0
 CLEAN_BUILD_TAPASCO=0
-PREPARE_ROSE=0
 INSTALL_ROSE=0
 PREPARE_ORKA_DISTRO=0
 BUILD_DOCKER=0
@@ -79,13 +78,9 @@ while [ "${1:-}" != "" ]; do
             CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
             CLEAN_BUILD_ORKA=1
-            PREPARE_ROSE=1
             PREPARE_ORKA_DISTRO=1
             INSTALL_ROSE=1
             BUILD_DOCKER=1
-            ;;
-        "--prepare-rose")
-            PREPARE_ROSE=1
             ;;
         "--prepare-orkadistro")
             PREPARE_ORKA_DISTRO=1
