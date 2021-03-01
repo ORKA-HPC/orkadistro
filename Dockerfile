@@ -127,4 +127,4 @@ COPY cfg_files/dockerbashrc /home/build/.profile
 
 ENV PATH="/home/build/fpgainfrastructure/hw/build_ip:$PATH"
 ENV PATH="/home/build/fpgainfrastructure/hw/orka_hw_configurator:$PATH"
-ENV PATH="/home/build/fpgainfrastructure/hw/xilinx:$PATH"
+ENV PATH="/home/build/fpgainfrastructure/hw/:$PATH"
