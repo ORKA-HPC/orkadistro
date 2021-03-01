@@ -65,9 +65,8 @@ RUN chown -R build /home/build
 
 # Fetch and build boost
 WORKDIR /usr/src
-RUN wget -O boost-1.67.0.tar.bz2 \
-    http://sourceforge.net/projects/boost/files/boost/1.67.0/boost_1_67_0.tar.bz2/download \
-    && tar xf boost-1.67.0.tar.bz2 \
+COPY boost-1.67.0.tar.bz2 boost-1.67.0.tar.bz2
+RUN tar xf boost-1.67.0.tar.bz2 \
     && rm -f boost-1.67.0.tar.bz2
 
 WORKDIR /usr/src/boost_1_67_0
