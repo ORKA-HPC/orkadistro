@@ -36,7 +36,7 @@ exec_into_container="false"
 exec_non_interactive="false"
 start_container="false"
 
-echo [run_docker.sh "$@"]  
+echo [run_docker.sh "$@"]
 while [ "${1:-}" != "" ]; do
     case "$1" in
         "--stop" | "-q")
@@ -138,7 +138,7 @@ function start_container() {
         echo "                   (this is mapped to $PWD)"
         echo "                 and then stop and remove the container and rebuild it."
         echo [run_docker.sh] Trying to start the suspended container...
-        docker container start $CONTAINER_NAME || { 
+        docker container start $CONTAINER_NAME || {
 		echo Could not start suspended container
 		exit 1
 	}
