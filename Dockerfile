@@ -26,14 +26,6 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
 RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 100
 
-# This stupid workaround has to be included because
-# we need git submodule _set-url_ in script rebuild.sh ...
-#        Sadly git from mainline 18.04 is too old for this
-# If one day this PPA fails, you'll have to sed -i the
-# .gitmodules in /home/build/src/rose-git/.
-# ([submodule "src/frontend/CxxFrontend/EDG"] to be specific.)
-RUN apt-get -y install software-properties-common
-RUN apt-add-repository ppa:git-core/ppa -y
 RUN apt-get -y update
 RUN apt-get -y install git ccache
 
