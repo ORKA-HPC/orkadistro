@@ -146,15 +146,18 @@ function cleanBuildTapasco() {
 
     ./run_docker.sh -r --exec-non-interactive \
                     "cd && cd tapasco-workspace &&
-                    . tapasco-setup.sh && tapasco-build-libs --skip_driver" || return 1
+                    . tapasco-setup.sh && tapasco-build-libs --skip_driver" \
+                        || return 1
 
     ./run_docker.sh -r --exec-non-interactive \
                     "cd && cd tapasco-workspace &&
-                    cd build* && cpack -G DEB && sudo dpkg -i *.deb" || return 1
+                    cd build* && cpack -G DEB && sudo dpkg -i *.deb" \
+                        || return 1
 
     ./run_docker.sh -r --exec-non-interactive \
                     'cd && cd tapasco-workspace &&
-                    sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh' || return 1
+                    sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh' \
+                        || return 1
 }
 
 [ "$PREPARE_ORKA_DISTRO" = "1" ] && { prepareOrkaDistro || exit 1; }
