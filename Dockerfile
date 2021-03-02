@@ -86,11 +86,14 @@ RUN apt-get install libicu60
 
 USER root
 
-# Build and Install tapasco requirements
+# tapasco runtime...
 RUN apt-get install -y \
-    build-essential linux-headers-generic python \
-    cmake libelf-dev libncurses-dev git rpm \
-    unzip git zip findutils curl
+        build-essential linux-headers-generic python3 \
+        cmake libelf-dev git rpm cargo libncurses-dev
+
+# ... and toolflow
+RUN apt-get install -y \
+    unzip git zip findutils curl default-jdk
 
 # Install ORKA-HPC dependencies
 USER root
