@@ -146,13 +146,11 @@ function cleanBuildTapasco() {
 
     ./run_docker.sh -r --exec-non-interactive \
                     "cd && cd tapasco-workspace &&
-                    . tapasco-setup.sh && cd ../tapasco/runtime &&
-                    { cmake -DCMAKE_C_FLAGS='-fPIC' . && make -j$MAX_CORES; }" || return 1
+                    . tapasco-setup.sh && tapasco-build-libs --skip_driver" || return 1
 
     ./run_docker.sh -r --exec-non-interactive \
-                    'cd && cd tapasco-workspace &&
-                    sudo bash -c ". tapasco-setup.sh &&
-                    cd ../tapasco/runtime && make install"' || return 1
+                    "cd && cd tapasco-workspace &&
+                    cd build* && cpack -G DEB && sudo dpkg -i *.deb" || return 1
 
     ./run_docker.sh -r --exec-non-interactive \
                     'cd && cd tapasco-workspace &&
