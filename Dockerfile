@@ -5,6 +5,7 @@ FROM ubuntu:bionic
 ARG VIVADO_VERSION=2018.2
 ARG ARG_MAX_CORES=""
 ARG USER_ID=1000
+ARG ARG_XILINXD_LICENSE_FILE=""
 # PLEASE APT SHUT uuuuuUP!!
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -103,7 +104,7 @@ WORKDIR /usr/Xilinx
 ENV PATH="/usr/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
 
 # Install XILINX license server
-ENV XILINXD_LICENSE_FILE=2100@scotty.e-technik.uni-erlangen.de
+ENV XILINXD_LICENSE_FILE="$ARG_XILINXD_LICENSE_FILE"
 
 # Copy in config files
 USER build
