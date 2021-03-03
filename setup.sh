@@ -55,6 +55,14 @@ function checkPrerequisites() {
 
 checkPrerequisites
 
+function tryToShutdownContainer() {
+  echo You must stop and remove the docker container
+  echo before you can update orkadistro.
+  echo Hit Enter if this is OK!
+  read i
+  ./run_docker.sh --stop-and-remove
+}
+
 while [ "${1:-}" != "" ]; do
     case "$1" in
         "--clean-build-rose" | "-c")
@@ -70,9 +78,13 @@ while [ "${1:-}" != "" ]; do
             CLEAN_BUILD_ORKA=1
             ;;
         "--after-pull")
-            INSTALL_ROSE=1
+            tryToShutdownContainer
+            # INSTALL_ROSE=1
+            CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
             CLEAN_BUILD_ORKA=1
+            INSTALL_ROSE=1
+            BUILD_DOCKER=1
             ;;
         "--init")
             CLEAN_BUILD_ROSE=1
