@@ -36,6 +36,7 @@ done
 DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TAG"
 
 docker build \
+       --pull --no-cache \
        --build-arg ARG_XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
        --build-arg USER_ID="$USER_ID" \
        --build-arg ARG_MAX_CORES="$MAX_CORES" \
