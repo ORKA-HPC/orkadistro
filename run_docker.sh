@@ -112,20 +112,20 @@ function unmount_boardfiles_overlay() {
 function launch_container_background() {
     echo exec cmd [docker run --name $CONTAINER_NAME ...]
     docker run \
-	    --env XILINX_DOCKER_PATH="$XILINX_DOCKER_PATH" \
-	    --env XILINX_VIVADO_VERSION="$XILINX_VIVADO_VERSION" \
-	    --env XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
-         --name $CONTAINER_NAME -t -d \
-         -v $PWD:/mnt \
-         -v $PWD/orkaevolution:/home/build/orkaevolution \
-         -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
-         -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
-         -v $PWD/roserebuild:/home/build/roserebuild \
-         -v $PWD/tapasco:/home/build/tapasco \
-         -v $PWD/tests:/home/build/tests \
-         -v $PWD/synthBin:/home/build/synthBin \
-         -v $PWD/"$mnt_point":"$docker_mnt_point" \
-         $IMAGE_NAME:$IMAGE_TAG
+           --env XILINX_DOCKER_PATH="$XILINX_DOCKER_PATH" \
+           --env XILINX_VIVADO_VERSION="$XILINX_VIVADO_VERSION" \
+           --env XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
+           --name $CONTAINER_NAME -t -d \
+           -v $PWD:/mnt \
+           -v $PWD/orkaevolution:/home/build/orkaevolution \
+           -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
+           -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
+           -v $PWD/roserebuild:/home/build/roserebuild \
+           -v $PWD/tapasco:/home/build/tapasco \
+           -v $PWD/tests:/home/build/tests \
+           -v $PWD/synthBin:/home/build/synthBin \
+           -v $PWD/"$mnt_point":"$docker_mnt_point" \
+           $IMAGE_NAME:$IMAGE_TAG
 }
 
 function start_container() {
