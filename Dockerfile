@@ -2,10 +2,10 @@ FROM ubuntu:bionic
 
 # ARGS
 # You can’t change ENV directly during the build
-ARG VIVADO_VERSION=2018.2
+# ARG VIVADO_VERSION=2018.2
 ARG ARG_MAX_CORES=""
 ARG USER_ID=1000
-ARG ARG_XILINXD_LICENSE_FILE=""
+# ARG ARG_XILINXD_LICENSE_FILE=""
 # PLEASE APT SHUT uuuuuUP!!
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -45,6 +45,8 @@ ENV CCACHE_MAXSIZE=20G
 ENV CCACHE_LIMIT_MULTIPLE=1.0
 
 COPY cfg_files/profile_d_ccache.sh /etc/profile.d/ccache.sh
+COPY cfg_files/profile_d_xilinx_docker_path.sh /etc/profile.d/xilinx_docker_path.sh
+COPY cfg_files/profile_d_fpgainfrastructure_paths.sh /etc/profile.d/fpgainfrastructure.sh
 
 # Add build user
 RUN apt-get install -y sudo
@@ -101,15 +103,14 @@ ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD
 WORKDIR /usr/Xilinx
 
 # Add Xilinx Tools to the path
-ENV PATH="/usr/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
+# ENV PATH="/opt/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
 
 # Install XILINX license server
-ENV XILINXD_LICENSE_FILE="$ARG_XILINXD_LICENSE_FILE"
+# ENV XILINXD_LICENSE_FILE="$ARG_XILINXD_LICENSE_FILE"
 
 # Copy in config files
 USER build
 COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
-
 
 USER root
 RUN chown -R build:build /home/build/
@@ -120,6 +121,6 @@ WORKDIR /home/build
 
 COPY cfg_files/dockerbashrc /home/build/.profile
 
-ENV PATH="/home/build/fpgainfrastructure/hw/build_ip:$PATH"
-ENV PATH="/home/build/fpgainfrastructure/hw/orka_hw_configurator:$PATH"
-ENV PATH="/home/build/fpgainfrastructure/hw/:$PATH"
+# ENV PATH="/home/build/fpgainfrastructure/hw/build_ip:$PATH"
+# ENV PATH="/home/build/fpgainfrastructure/hw/orka_hw_configurator:$PATH"
+# ENV PATH="/home/build/fpgainfrastructure/hw/:$PATH"
