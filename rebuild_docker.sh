@@ -9,6 +9,7 @@ XILINXD_LICENSE_FILE="${XILINXD_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlange
 
 PUSH_IMAGE="false"
 MAX_CORES="${MAX_CORES:-}"
+CLEAN_BUILD="${CLEAN_BUILD:-0}"
 USER_ID="${USER_ID:-"$(id -u)"}"
 
 # rm -rf orkaevolution
@@ -18,12 +19,15 @@ while [ "${1:-}" != "" ]; do
             shift
             MAX_CORES="$1"
             ;;
+        "--clean-build" | "-c")
+            CLEAN_BUILD=1
+            ;;
         "--push-image" | "-p")
             PUSH_IMAGE=true
             ;;
         "--name")
             echo [ IMAGE_NAME: $IMAGE_NAME ]
-	    exit
+            exit
             ;;
         *)
             echo [ WARNING: unknown flag ]
@@ -35,8 +39,12 @@ done
 
 DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TAG"
 
+function expandCleanBuildParams() {
+    [ "$CLEAN_BUILD" = 1 ] && echo --pull --no-cache
+}
+
 docker build \
-       --pull --no-cache \
+       $(expandCleanBuildParams) \
        --build-arg ARG_XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
        --build-arg USER_ID="$USER_ID" \
        --build-arg ARG_MAX_CORES="$MAX_CORES" \
