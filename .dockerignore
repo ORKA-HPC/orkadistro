@@ -1,4 +1,3 @@
-
 ./roserebuild
 ./orkadistrotestenv
 ./tapasco
@@ -6,3 +5,5 @@
 ./vivado-boards
 ./fpgainfrastructure
 ./orkaevolution
+.git
+tests
