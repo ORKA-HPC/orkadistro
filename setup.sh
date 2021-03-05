@@ -79,8 +79,7 @@ while [ "${1:-}" != "" ]; do
             ;;
         "--after-pull")
             tryToShutdownContainer
-            # INSTALL_ROSE=1
-            CLEAN_BUILD_ROSE=1
+            REDEPLOY_ROSE=1
             CLEAN_BUILD_TAPASCO=1
             CLEAN_BUILD_ORKA=1
             INSTALL_ROSE=1
@@ -125,6 +124,18 @@ function prepareOrkaDistro() {
 function buildDocker() {
     echo [build docker image]
     ./rebuild_docker.sh
+}
+
+function rebuildRose() {
+    echo [rebuild rose]
+    ./run_docker.sh -r --exec-non-interactive \
+                    "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -r"
+}
+
+function installRose() {
+    echo [install rose]
+    ./run_docker.sh -r --exec-non-interactive \
+                    "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -i"
 }
 
 function cleanBuildRose() {
@@ -175,6 +186,7 @@ function cleanBuildTapasco() {
 [ "$PREPARE_ORKA_DISTRO" = "1" ] && { prepareOrkaDistro || exit 1; }
 [ "$BUILD_DOCKER" = "1" ] && { buildDocker || exit 1; }
 [ "$CLEAN_BUILD_ROSE" = 1 ] && { cleanBuildRose || exit 1; }
+[ "$REDEPLOY_ROSE" = 1 ] && { rebuildRose || exit 1; installRose || exit 1; }
 [ "$INSTALL_ROSE" = 1 ] && { installRose || exit 1; }
 [ "$CLEAN_BUILD_TAPASCO" = 1 ] && { cleanBuildTapasco || exit 1; }
 [ "$CLEAN_BUILD_ORKA" = 1 ] && { cleanBuildOrka || exit 1; }
