@@ -15,7 +15,8 @@ IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
 CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(realpath $PWD) | cut -c 1-8)"}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
-XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/usr/Xilinx"}"
+# be careful changing this. Some Vivado files generated for the host include absolute paths
+XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/opt/Xilinx"}"
 XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
 
 [ ! -d $XILINX_HOST_PATH ] && {
@@ -103,7 +104,7 @@ function unmount_boardfiles_overlay() {
     echo [unmount boardfiles overlay]
     sudo umount "$mnt_point" 2> /dev/null
     # we delete this so that ./rebuild_docker.sh can work again.
-    rm -rf "$work_dir"
+    sudo rm -rf "$work_dir"
     return 0
 }
 
@@ -128,15 +129,13 @@ function start_container() {
     setup_board_files_overlay_mount
     launch_container_background 2>/dev/null || {
         echo [run_docker.sh] Creating and running the docker container failed.
-        echo "               (Either because is is was already created and is now suspended"
-        echo "                or because you just pulled this repo)"
-        echo "               In the case you have recently pulled orkadistro,"
-        echo "               the image of this suspended container might have changed."
-        echo "                 Save all your changes from the container's filesystem"
-        echo "                 - either by doing $ docker commit <yourrepo>/<imagename>:<tag>"
-        echo "                 - or by copying them to the /mnt (inside the running container)"
-        echo "                   (this is mapped to $PWD)"
-        echo "                 and then stop and remove the container and rebuild it."
+        echo "               - Either because is is was already created and is now suspended"
+        echo "               - or because you just pulled this repo."
+        echo "               In the case you have recently __pulled__ orkadistro,"
+        echo "               the image of this suspended container might have changed:"
+        echo "               - Save all your changes from the container's filesystem,"
+        echo "               - ./run_docker.sh --stop-and-remove the container"
+	echo "               - and ./rebuild_docker.sh it."
         echo [run_docker.sh] Trying to start the suspended container...
         docker container start $CONTAINER_NAME || {
 		echo Could not start suspended container
