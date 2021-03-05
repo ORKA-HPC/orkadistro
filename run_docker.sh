@@ -15,6 +15,7 @@ IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
 CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(realpath $PWD) | cut -c 1-8)"}"
 
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
+XILINXD_LICENSE_FILE="${XILINXD_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlangen.de"}"
 # be careful changing this. Some Vivado files generated for the host include absolute paths
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/opt/Xilinx"}"
 XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
@@ -111,6 +112,9 @@ function unmount_boardfiles_overlay() {
 function launch_container_background() {
     echo exec cmd [docker run --name $CONTAINER_NAME ...]
     docker run \
+	    --env XILINX_DOCKER_PATH="$XILINX_DOCKER_PATH" \
+	    --env XILINX_VIVADO_VERSION="$XILINX_VIVADO_VERSION" \
+	    --env XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
          --name $CONTAINER_NAME -t -d \
          -v $PWD:/mnt \
          -v $PWD/orkaevolution:/home/build/orkaevolution \

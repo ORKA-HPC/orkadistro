@@ -3,9 +3,7 @@
 IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
 IMAGE_TAG="latest"
 
-VIVADO_VERSION="${VIVADO_VERSION:-2018.2}"
 DOCKER_PUSH_PATH="i2git.cs.fau.de:5005/orka/dockerfiles"
-XILINXD_LICENSE_FILE="${XILINXD_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlangen.de"}"
 
 PUSH_IMAGE="false"
 MAX_CORES="${MAX_CORES:-}"
@@ -45,7 +43,6 @@ function expandCleanBuildParams() {
 
 docker build \
        $(expandCleanBuildParams) \
-       --build-arg ARG_XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
        --build-arg USER_ID="$USER_ID" \
        --build-arg ARG_MAX_CORES="$MAX_CORES" \
        --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
