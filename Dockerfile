@@ -18,7 +18,7 @@ RUN apt-get update
 RUN apt-get install -y make vim cmake git wget gcc g++ gfortran gcc-7 g++-7 \
                        gfortran-7 libxml2-dev texlive git automake autoconf libtool \
                        flex bison openjdk-8-jdk debhelper devscripts \
-                       ghostscript lsb-core python perl-doc graphviz
+                       ghostscript lsb-core python python-dev perl-doc graphviz
 ## Devtools
 RUN apt-get -y install ranger vim
 
