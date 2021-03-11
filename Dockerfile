@@ -94,7 +94,7 @@ RUN apt-get install -y \
 USER root
 RUN apt-get update -y
 RUN apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format
-RUN apt-get install -y tcl-dev uuid-runtime gdb
+RUN apt-get install -y tcl-dev uuid-runtime gdb libffi-dev
 RUN updatedb
 
 ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD_LIBRARY_PATH"
