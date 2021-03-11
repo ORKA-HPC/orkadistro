@@ -152,13 +152,13 @@ function installRose() {
 
 function cleanBuildFpgaInfrastructure() {
     echo [clean build fpgainfrastructure "(ap2)"]
-    ./run_docker -r --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                  "cd fpgainfrastructure; make clean && make all"
 }
 
 function cleanBuildOrkaxomp() {
     echo [clean build orkaxomp]
-    ./run_docker -r --exec-non-interactive \
+    ./run_docker.sh -r --exec-non-interactive \
                  "cd orkaevolution/orka_xomp_common/; make clean && make all"
 }
 
