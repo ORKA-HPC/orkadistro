@@ -15,10 +15,15 @@ Git URL: git@i2git.cs.fau.de:orka/dockerfiles/orkadistro.git
 
 ## Getting Started
 
-- `./setup.sh` does a clean build of the docker container.
+- `./setup.sh --init` does a clean build of the docker container.
   It also builds ROSE and orkaevolution 
   (both _inside_ the docker container).
   See section `Frequent Issues` if this script fails.
+- `./setup.sh --after-pull` will do something similar to `--init`
+  but tries to speed things up if possible. Due to the way
+  docker works, this will sometimes fail. Try to run the
+  script with the environment Variable `CLEAN_BUILD=1` set:
+  `CLEAN_BUILD=1 ./setup.sh --after-pull`.
 - `./run_docker.sh -r -e -q` starts the docker container and 
   presents a shell to you running in the container. After
   you close that shell (using C-d) it suspends the container.
@@ -46,45 +51,16 @@ git clone <orkadistro-uri> orkadistro && cd orkadistro
 gives you access to two _different_ instances of the
 same images!
 
-## Pulling a pre-built Docker image (BETA!)
-
-In order to prevent users from having to build this Docker image
-themselves (which would be a very time consuming thing to do), we
-additionally host pre-build Docker images here on i2git.
-
-A simple
-`$ docker run -it i2git.cs.fau.de:5005/orka/dockerfiles/orkadistro bash -l`
-ought to be enough to pull the container, to start it, and
-to launch a bash process inside it. Note that the container
-**and all the changes you will have made inside it** will
-be gone after the shell exits!
-
 ## Frequent Issues
 
 - docker permission issues:
     - `sudo groupadd docker`
     - `sudo usermod -aG docker ${USER}`
     - `sudo service docker restart`
-    - Log out and back in
+    - Log out and back in.
 
 - You need to run `run_docker.sh --stop-and-unmount` before
   you can `./rebuild.sh` the image again.
-
-- `./setup.sh` fails while building rose. Still on the host
-  shell perform the following comands:
-    - `cd roserebuild`
-    - `./rebuild.sh --prepare --with-edg-repo`
-    - `cd ..`
-    - `./run_docker.sh -r -e` this will start the docker image
-    - `cd roserebuild`
-    - `MAX_CORES=4 ./rebuild.sh --clean -b` ignore errors
-    - `./rebuild.sh -i`
-    - `cd ../fpgainfrastructure/hw/orka_hw_configurator`
-    - `make clean && make`
-    - `cd ../../../orkaevolution`
-    - `cmake .`
-    - `make -j`
-
 
 ## Notes and References
 
