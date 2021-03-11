@@ -22,9 +22,10 @@ XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/opt/Xilinx"}"
 XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
 
 # Quartus
-LM_LICENSE_FILE="${LM_LICENSE_FILE:-""}"
-QUARTUS_DOCKER_PATH="${QUARTUS_DOCKER_PATH:-""}"
-QUARTUS_HOST_PATH="${QUARTUS_HOST_PATH:-""}"
+LM_LICENSE_FILE="${LM_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlangen.de"}"
+QUARTUS_DOCKER_PATH="${QUARTUS_DOCKER_PATH:-"/opt/intel/"}"
+QUARTUS_HOST_PATH="${QUARTUS_HOST_PATH:-"/opt/intel/"}"
+QUARTUS_VERSION="${QUARTUS_VERSION:-"20.1"}"
 
 [ ! -d $XILINX_HOST_PATH ] && {
     echo $XILINX_HOST_PATH does not exist in host file system
@@ -115,24 +116,35 @@ function unmount_boardfiles_overlay() {
     return 0
 }
 
+function quartusInstalled() {
+    [ -d "$QUARTUS_HOST_PATH" ] && return 0 || return 1
+}
+
+function xilinxInstalled() {
+    [ -d "$XILINX_HOST_PATH" ] && return 0 || return 1
+}
+
 function launch_container_background() {
     echo exec cmd [docker run --name $CONTAINER_NAME ...]
-    docker run \
-           --env XILINX_DOCKER_PATH="$XILINX_DOCKER_PATH" \
-           --env XILINX_VIVADO_VERSION="$XILINX_VIVADO_VERSION" \
-           --env XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
-           --env LM_LICENSE_FILE="$LM_LICENSE_FILE" \
-           --name $CONTAINER_NAME -t -d \
-           -v $PWD:/mnt \
-           -v $PWD/orkaevolution:/home/build/orkaevolution \
-           -v $XILINX_HOST_PATH:/$XILINX_DOCKER_PATH \
-           -v $PWD/fpgainfrastructure:/home/build/fpgainfrastructure \
-           -v $PWD/roserebuild:/home/build/roserebuild \
-           -v $PWD/tapasco:/home/build/tapasco \
-           -v $PWD/tests:/home/build/tests \
-           -v $PWD/synthBin:/home/build/synthBin \
-           -v $PWD/"$mnt_point":"$docker_mnt_point" \
-           $IMAGE_NAME:$IMAGE_TAG
+    volumeMountParams=(
+           -v "$PWD:/mnt"
+           -v "$PWD/orkaevolution:/home/build/orkaevolution"
+           -v "$PWD/fpgainfrastructure:/home/build/fpgainfrastructure"
+           -v "$PWD/roserebuild:/home/build/roserebuild"
+           -v "$PWD/tapasco:/home/build/tapasco"
+           -v "$PWD/tests:/home/build/tests"
+           -v "$PWD/synthBin:/home/build/synthBin"
+           -v "$PWD/$mnt_point:$docker_mnt_point" )
+    xilinxInstalled && volumeMountParams+=( -v "$XILINX_HOST_PATH:/$XILINX_DOCKER_PATH" )
+    quartusInstalled && volumeMountParams+=( -v "$QUARTUS_HOST_PATH:/$QUARTUS_DOCKER_PATH" )
+    envVarsToPass=(
+           --env "XILINX_DOCKER_PATH=$XILINX_DOCKER_PATH"
+           --env "XILINX_VIVADO_VERSION=$XILINX_VIVADO_VERSION"
+           --env "XILINXD_LICENSE_FILE=$XILINXD_LICENSE_FILE"
+           --env "LM_LICENSE_FILE=$LM_LICENSE_FILE" )
+
+    docker run "${envVarsToPass[@]}" "${volumeMountParams[@]}" \
+           --name $CONTAINER_NAME -t -d $IMAGE_NAME:$IMAGE_TAG
 }
 
 function start_container() {
@@ -146,12 +158,12 @@ function start_container() {
         echo "               the image of this suspended container might have changed:"
         echo "               - Save all your changes from the container's filesystem,"
         echo "               - ./run_docker.sh --stop-and-remove the container"
-	echo "               - and ./rebuild_docker.sh it."
+        echo "               - and ./rebuild_docker.sh it."
         echo [run_docker.sh] Trying to start the suspended container...
         docker container start $CONTAINER_NAME || {
-		echo Could not start suspended container
-		exit 1
-	}
+            echo Could not start suspended container
+            exit 1
+        }
     }
 }
 
