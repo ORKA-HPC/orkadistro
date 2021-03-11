@@ -86,6 +86,8 @@ while [ "${1:-}" != "" ]; do
             CLEAN_BUILD_ORKA=1
             INSTALL_ROSE=1
             BUILD_DOCKER=1
+            CLEAN_BUILD_FPGAINFRASTRUCTURE=1
+            CLEAN_BUILD_ORKAXOMP=1
             ;;
         "--init")
             CLEAN_BUILD_ROSE=1
@@ -94,6 +96,8 @@ while [ "${1:-}" != "" ]; do
             PREPARE_ORKA_DISTRO=1
             INSTALL_ROSE=1
             BUILD_DOCKER=1
+            CLEAN_BUILD_FPGAINFRASTRUCTURE=1
+            CLEAN_BUILD_ORKAXOMP=1
             ;;
         "--prepare-orkadistro")
             PREPARE_ORKA_DISTRO=1
@@ -149,13 +153,13 @@ function installRose() {
 function cleanBuildFpgaInfrastructure() {
     echo [clean build fpgainfrastructure "(ap2)"]
     ./run_docker -r --exec-non-interactive \
-                 "cd fpgainfrastructure; make all"
+                 "cd fpgainfrastructure; make clean && make all"
 }
 
 function cleanBuildOrkaxomp() {
     echo [clean build orkaxomp]
     ./run_docker -r --exec-non-interactive \
-                 "cd orkaevolution/orka_xomp_common/; make all"
+                 "cd orkaevolution/orka_xomp_common/; make clean && make all"
 }
 
 function cleanBuildRose() {
