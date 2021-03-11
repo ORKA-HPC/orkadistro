@@ -14,11 +14,17 @@ IMAGE_TAG="${IMAGE_TAG:-"latest"}"
 IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
 CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(realpath $PWD) | cut -c 1-8)"}"
 
+# Xilinx
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
 XILINXD_LICENSE_FILE="${XILINXD_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlangen.de"}"
 # be careful changing this. Some Vivado files generated for the host include absolute paths
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/opt/Xilinx"}"
 XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
+
+# Quartus
+LM_LICENSE_FILE="${LM_LICENSE_FILE:-""}"
+QUARTUS_DOCKER_PATH="${QUARTUS_DOCKER_PATH:-""}"
+QUARTUS_HOST_PATH="${QUARTUS_HOST_PATH:-""}"
 
 [ ! -d $XILINX_HOST_PATH ] && {
     echo $XILINX_HOST_PATH does not exist in host file system
@@ -115,6 +121,7 @@ function launch_container_background() {
            --env XILINX_DOCKER_PATH="$XILINX_DOCKER_PATH" \
            --env XILINX_VIVADO_VERSION="$XILINX_VIVADO_VERSION" \
            --env XILINXD_LICENSE_FILE="$XILINXD_LICENSE_FILE" \
+           --env LM_LICENSE_FILE="$LM_LICENSE_FILE" \
            --name $CONTAINER_NAME -t -d \
            -v $PWD:/mnt \
            -v $PWD/orkaevolution:/home/build/orkaevolution \
