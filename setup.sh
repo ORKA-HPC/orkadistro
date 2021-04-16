@@ -81,6 +81,7 @@ while [ "${1:-}" != "" ]; do
             ;;
         "--after-pull")
             tryToShutdownContainer
+            PREPARE_ORKA_DISTRO=1
             REDEPLOY_ROSE=1
             CLEAN_BUILD_TAPASCO=1
             CLEAN_BUILD_ORKA=1
