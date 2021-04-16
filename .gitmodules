@@ -17,3 +17,6 @@
 [submodule "orkadistrotestenv"]
 	path = orkadistrotestenv
 	url = git@i2git.cs.fau.de:orka/vagrantfiles/orkadistrotestenv.git
+[submodule "vcuboxsetup"]
+	path = execEnvSetupVcu118
+	url = git@i2git.cs.fau.de:orka/execenvs/vcuboxsetup.git
