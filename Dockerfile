@@ -19,6 +19,8 @@ RUN apt-get install -y make vim cmake git wget gcc g++ gfortran gcc-7 g++-7 \
                        ghostscript lsb-core python python-dev perl-doc graphviz
 ## Devtools
 RUN apt-get -y install ranger vim
+## HostBinary runtime and build dependency
+RUN apt-get -y install libffi-dev freeglut3-dev libx11-dev
 
 ## use gcc 7
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
