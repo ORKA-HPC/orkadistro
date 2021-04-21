@@ -2,10 +2,8 @@ FROM ubuntu:bionic
 
 # ARGS
 # You can’t change ENV directly during the build
-# ARG VIVADO_VERSION=2018.2
 ARG ARG_MAX_CORES=""
 ARG USER_ID=1000
-# ARG ARG_XILINXD_LICENSE_FILE=""
 # PLEASE APT SHUT uuuuuUP!!
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -56,7 +54,6 @@ RUN ( echo && echo "build ALL=(ALL) NOPASSWD: ALL" ) >> /etc/sudoers
 RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
 WORKDIR /home/build
 RUN chown -R build /home/build
-# RUN chmod -R 755 /home/build
 
 # Fetch and build boost
 WORKDIR /usr/src
@@ -102,12 +99,6 @@ ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD
 # Create mountpoint for Xilinx and binaries files to path
 WORKDIR /usr/Xilinx
 
-# Add Xilinx Tools to the path
-# ENV PATH="/opt/Xilinx/Vivado/$VIVADO_VERSION/bin:$PATH"
-
-# Install XILINX license server
-# ENV XILINXD_LICENSE_FILE="$ARG_XILINXD_LICENSE_FILE"
-
 # Copy in config files
 USER build
 COPY cfg_files/rc.conf /home/build/.config/ranger/rc.conf
@@ -120,7 +111,3 @@ USER build
 WORKDIR /home/build
 
 COPY cfg_files/dockerbashrc /home/build/.profile
-
-# ENV PATH="/home/build/fpgainfrastructure/hw/build_ip:$PATH"
-# ENV PATH="/home/build/fpgainfrastructure/hw/orka_hw_configurator:$PATH"
-# ENV PATH="/home/build/fpgainfrastructure/hw/:$PATH"
