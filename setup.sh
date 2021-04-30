@@ -178,7 +178,7 @@ function installRose() {
 function cleanBuildOrka() {
     echo [build orkaevolution]
     ./run_docker.sh -r --exec-non-interactive \
-                    "cd orkaevolution; cmake . ; make clean ; make -j"
+                    "cd orkaevolution; ./build_clean.sh"
 }
 
 function createTapascoSetup() {
