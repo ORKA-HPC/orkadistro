@@ -51,7 +51,7 @@ COPY cfg_files/profile_d_xilinx_docker_path.sh /etc/profile.d/xilinx_docker_path
 COPY cfg_files/profile_d_fpgainfrastructure_paths.sh /etc/profile.d/fpgainfrastructure.sh
 
 # Add build user
-RUN apt-get update && apt-get install -y install -y sudo
+RUN apt-get update && apt-get install -y sudo
 RUN echo "Set disable_coredump false" > /etc/sudo.conf
 RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
 RUN ( echo && echo "build ALL=(ALL) NOPASSWD: ALL" ) >> /etc/sudoers
