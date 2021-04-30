@@ -12,23 +12,25 @@ ENV MAX_CORES=$ARG_MAX_CORES
 SHELL [ "/bin/bash", "-c" ]
 
 # ROSE dependencies
-RUN apt-get update
-RUN apt-get install -y make vim cmake git wget gcc g++ gfortran gcc-7 g++-7 \
-                       gfortran-7 libxml2-dev texlive git automake autoconf libtool \
-                       flex bison openjdk-8-jdk debhelper devscripts \
-                       ghostscript lsb-core python python-dev perl-doc graphviz
+RUN apt-get update && apt-get install -y \
+        make vim cmake git wget gcc g++ gfortran gcc-7 g++-7 \
+        gfortran-7 libxml2-dev texlive git automake autoconf libtool \
+        flex bison openjdk-8-jdk debhelper devscripts \
+        ghostscript lsb-core python python-dev perl-doc graphviz
+
 ## Devtools
-RUN apt-get -y install ranger vim
+RUN apt-get update && \
+        apt-get -y install ranger vim
 ## HostBinary runtime and build dependency
-RUN apt-get -y install libffi-dev freeglut3-dev libx11-dev
+RUN apt-get update && \
+        apt-get -y install libffi-dev freeglut3-dev libx11-dev
+## Ccache
+RUN apt-get -y update && apt-get -y install git ccache
 
 ## use gcc 7
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
 RUN update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-7 100
-
-RUN apt-get -y update
-RUN apt-get -y install git ccache
 
 # create link dir for ccache
 ARG ORKA_HPC_CCACHE_SYMLINK_DIR="/usr/ccache-symlinks"
@@ -49,7 +51,7 @@ COPY cfg_files/profile_d_xilinx_docker_path.sh /etc/profile.d/xilinx_docker_path
 COPY cfg_files/profile_d_fpgainfrastructure_paths.sh /etc/profile.d/fpgainfrastructure.sh
 
 # Add build user
-RUN apt-get install -y sudo
+RUN apt-get update && apt-get install -y install -y sudo
 RUN echo "Set disable_coredump false" > /etc/sudo.conf
 RUN sed -i '/NOPASSWD/s/\#//' /etc/sudoers
 RUN ( echo && echo "build ALL=(ALL) NOPASSWD: ALL" ) >> /etc/sudoers
@@ -75,25 +77,25 @@ RUN ldconfig
 ## setup PATH
 ENV PATH="/usr/rose/bin:/usr/jre/bin:$PATH"
 
-RUN apt-get update
-RUN apt-get install libicu60
+RUN apt-get update && apt-get install -y libicu60
 
 USER root
 
 # tapasco runtime...
-RUN apt-get install -y \
+RUN apt-get update && \
+        apt-get install -y \
         build-essential linux-headers-generic python3 \
         cmake libelf-dev git rpm cargo libncurses-dev
 
 # ... and toolflow
-RUN apt-get install -y \
-    unzip git zip findutils curl default-jdk
+RUN apt-get update && \
+        apt-get install -y unzip git zip findutils curl default-jdk
 
 # Install ORKA-HPC dependencies
 USER root
-RUN apt-get update -y
-RUN apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format
-RUN apt-get install -y tcl-dev uuid-runtime gdb libffi-dev
+RUN apt-get update -y && \
+        apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format \
+        tcl-dev uuid-runtime gdb libffi-dev
 RUN updatedb
 
 ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/:$LD_LIBRARY_PATH"
