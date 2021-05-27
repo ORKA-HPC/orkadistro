@@ -2,7 +2,7 @@ FROM ubuntu:bionic
 
 ARG ARG_MAX_CORES=""
 ARG USER_ID=1000
-ARG DEBIAN_FRONTEND=noninteractive # Silence APT
+ARG DEBIAN_FRONTEND=noninteractive
 ENV MAX_CORES=$ARG_MAX_CORES
 
 SHELL [ "/bin/bash", "-c" ]
