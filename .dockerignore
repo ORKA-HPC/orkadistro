@@ -1,9 +1,0 @@
-./roserebuild
-./orkadistrotestenv
-./tapasco
-./vcubox
-./vivado-boards
-./fpgainfrastructure
-./orkaevolution
-.git
-tests
