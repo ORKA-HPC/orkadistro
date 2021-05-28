@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
-IMAGE_TAG="latest"
+IMAGE_TAG="development"
+TARGET="development"
 
 DOCKER_PUSH_PATH="i2git.cs.fau.de:5005/orka/dockerfiles"
 
@@ -27,6 +28,15 @@ while [ "${1:-}" != "" ]; do
             echo [ IMAGE_NAME: $IMAGE_NAME ]
             exit
             ;;
+        "--target")
+            shift
+            TARGET="$1"
+            IMAGE_TAG="$1"
+            ;;
+        "--list-targets")
+            echo Available targets are development, development_closure, and production
+            exit
+            ;;
         *)
             echo [ WARNING: unknown flag ]
             shift
@@ -37,11 +47,37 @@ done
 
 DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TAG"
 
+function linkDockerIgnoreBasedOnTarget() {
+    local dign_file=".dockerignore"
+    case "$TARGET" in
+        "development")
+            ln -sf docker_ignore/dockerignore_development \
+               "${dign_file}"
+        ;;
+        "development_closure")
+            ln -sf docker_ignore/dockerignore_development_closure \
+               "${dign_file}"
+        ;;
+        "production")
+            ln -sf docker_ignore/dockerignore_production \
+               "${dign_file}"
+        ;;
+    esac
+}
+
+function logIfCleanBuild() {
+    [ "$CLEAN_BUILD" = 1 ] && echo Running in clean build mode.
+}
+
 function expandCleanBuildParams() {
     [ "$CLEAN_BUILD" = 1 ] && echo --pull --no-cache
 }
 
+logIfCleanBuild
+linkDockerIgnoreBasedOnTarget
+
 docker build \
+       --target "$TARGET" \
        $(expandCleanBuildParams) \
        --build-arg USER_ID="$USER_ID" \
        --build-arg ARG_MAX_CORES="$MAX_CORES" \

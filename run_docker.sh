@@ -10,9 +10,10 @@ function print_help(){
     echo "--help or -h"
 }
 
-IMAGE_TAG="${IMAGE_TAG:-"latest"}"
+IMAGE_TAG="${IMAGE_TAG:-"development"}"
 IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
 CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(realpath $PWD) | cut -c 1-8)"}"
+TARGET="development"
 
 # Xilinx
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
@@ -48,6 +49,11 @@ start_container="false"
 echo [run_docker.sh "$@"]
 while [ "${1:-}" != "" ]; do
     case "$1" in
+        "--target")
+            shift
+            IMAGE_TAG="$1"
+            TARGET="$1"
+            ;;
         "--stop" | "-q")
             stop_container="true"
             ;;
@@ -66,6 +72,7 @@ while [ "${1:-}" != "" ]; do
             echo "IMAGE_TAG: $IMAGE_TAG"
             echo "IMAGE_NAME: $IMAGE_NAME"
             echo "CONTAINER_NAME: $CONTAINER_NAME"
+            echo "TARGET: $TARGET"
             echo Note that you can override these variables
 
             exit 0
@@ -73,14 +80,6 @@ while [ "${1:-}" != "" ]; do
             ;;
         "--start" | "-r")
             start_container="true"
-            ;;
-        "--get-image-name")
-            echo $IMAGE_NAME
-            exit 0
-            ;;
-        "--get-container-name")
-            echo $CONTAINER_NAME
-            exit 0
             ;;
         "--help" | "-h")
             print_help
@@ -124,9 +123,12 @@ function xilinxInstalled() {
     [ -d "$XILINX_HOST_PATH" ] && return 0 || return 1
 }
 
+function fullContName() {
+    echo "$CONTAINER_NAME-$TARGET"
+}
+
 function launch_container_background() {
-    echo exec cmd [docker run --name $CONTAINER_NAME ...]
-    volumeMountParams=(
+    fullVolumeMountParams=(
            -v "$PWD:/mnt"
            -v "$PWD/orkaevolution:/home/build/orkaevolution"
            -v "$PWD/fpgainfrastructure:/home/build/fpgainfrastructure"
@@ -135,16 +137,33 @@ function launch_container_background() {
            -v "$PWD/tests:/home/build/tests"
            -v "$PWD/synthBin:/home/build/synthBin"
            -v "$PWD/$mnt_point:$docker_mnt_point" )
-    xilinxInstalled && volumeMountParams+=( -v "$XILINX_HOST_PATH:/$XILINX_DOCKER_PATH" )
-    quartusInstalled && volumeMountParams+=( -v "$QUARTUS_HOST_PATH:/$QUARTUS_DOCKER_PATH" )
+    xilinxInstalled && fullVolumeMountParams+=( -v "$XILINX_HOST_PATH:/$XILINX_DOCKER_PATH" )
+    quartusInstalled && fullVolumeMountParams+=( -v "$QUARTUS_HOST_PATH:/$QUARTUS_DOCKER_PATH" )
+
+    fpgaVolumeMountParams=()
+    xilinxInstalled && fpgaVolumeMountParams+=( -v "$XILINX_HOST_PATH:/$XILINX_DOCKER_PATH" )
+    quartusInstalled && fpgaVolumeMountParams+=( -v "$QUARTUS_HOST_PATH:/$QUARTUS_DOCKER_PATH" )
+
     envVarsToPass=(
            --env "XILINX_DOCKER_PATH=$XILINX_DOCKER_PATH"
            --env "XILINX_VIVADO_VERSION=$XILINX_VIVADO_VERSION"
            --env "XILINXD_LICENSE_FILE=$XILINXD_LICENSE_FILE"
            --env "LM_LICENSE_FILE=$LM_LICENSE_FILE" )
 
-    docker run "${envVarsToPass[@]}" "${volumeMountParams[@]}" \
-           --name $CONTAINER_NAME -t -d $IMAGE_NAME:$IMAGE_TAG
+    case "$TARGET" in
+        "development")
+            echo [docker run --name "$(fullContName)" ...]
+            echo [uses the following image: $IMAGE_NAME:$IMAGE_TAG]
+            docker run "${envVarsToPass[@]}" "${fullVolumeMountParams[@]}" \
+                   --name "$(fullContName)" -t -d $IMAGE_NAME:$IMAGE_TAG
+        ;;
+        "development_closure" | "production")
+            echo [docker run --name "$(fullContName)" ...]
+            echo [uses the following image: $IMAGE_NAME:$IMAGE_TAG]
+            docker run "${envVarsToPass[@]}" "${fpgaVolumeMountParams[@]}" \
+                   --name "$(fullContName)" -t -d $IMAGE_NAME:$IMAGE_TAG
+        ;;
+    esac
 }
 
 function start_container() {
@@ -152,7 +171,7 @@ function start_container() {
     setup_board_files_overlay_mount
     launch_container_background 2>/dev/null || {
         echo [run_docker.sh] Creating and running the docker container failed.
-        echo "               - Either because is is was already created and is now suspended"
+        echo "               - Either because it was already created and is now suspended"
         echo "               - or because you just pulled this repo."
         echo "               In the case you have recently __pulled__ orkadistro,"
         echo "               the image of this suspended container might have changed:"
@@ -160,7 +179,7 @@ function start_container() {
         echo "               - ./run_docker.sh --stop-and-remove the container"
         echo "               - and ./rebuild_docker.sh it."
         echo [run_docker.sh] Trying to start the suspended container...
-        docker container start $CONTAINER_NAME || {
+        docker container start "$(fullContName)" || {
             echo Could not start suspended container
             exit 1
         }
@@ -169,7 +188,7 @@ function start_container() {
 
 function stop_container() {
     echo [stop container]
-    docker stop $CONTAINER_NAME
+    docker stop "$(fullContName)"
     unmount_boardfiles_overlay
 }
 
@@ -178,14 +197,14 @@ function stop_container() {
 }
 
 [ "${exec_into_container}" == "true" ] && {
-    docker exec -u build -it $CONTAINER_NAME bash -l || \
+    docker exec -u build -it "$(fullContName)" bash -l || \
         echo [could not open shell in container, \
                     probably you have not started it yet]
 }
 
 [ "${exec_non_interactive}" == "true" ] && {
     echo run [ "$@" ]
-    docker exec -u build -it $CONTAINER_NAME bash -l -c "$@" || {
+    docker exec -u build -it "$(fullContName)" bash -l -c "$@" || {
         echo Could not run command in container.
         echo Probably you have not started it yet or command executed with errorcode
         exit 1
@@ -198,7 +217,7 @@ function stop_container() {
 
 [ "${stop_and_remove_container}" == "true" ] && {
     stop_container
-    docker rm $CONTAINER_NAME
+    docker rm "$(fullContName)"
 }
 
 exit 0
