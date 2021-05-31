@@ -1,3 +1,5 @@
+#######################
+# Stage 1 - development
 FROM ubuntu:bionic AS development
 
 ARG ARG_MAX_CORES=""
@@ -75,49 +77,62 @@ ENV PATH="/usr/rose/bin:/usr/jre/bin:$PATH"
 USER build
 WORKDIR /home/build
 
-## Stage 2
-FROM development AS development_closure
+#######################################
+## Stage 2 - development_rose
+FROM development AS development_rose
 
 USER root
-COPY --chown=build:build fpgainfrastructure /home/build/fpgainfrastructure
-COPY --chown=build:build orkaevolution /home/build/orkaevolution
 COPY --chown=build:build roserebuild /home/build/roserebuild
-COPY --chown=build:build tapasco /home/build/tapasco
 
 # install rose
 USER build
 WORKDIR /home/build/roserebuild
+# RUN ./rebuild -b # if not built
 RUN ./rebuild.sh -i
 WORKDIR /home/build
 RUN rm -rf roserebuild
 
-# install tapasco
-WORKDIR /home/build
-RUN mkdir tapasco-artifacts
-RUN mkdir tapasco-workspace
-RUN cd tapasco-workspace && ../tapasco/tapasco-init.sh
-RUN cd tapasco-workspace && . tapasco-setup.sh \
-        && cd ${TAPASCO_HOME_TOOLFLOW}/scala \
-        && ./gradlew buildDEB \
-        && cp build/distributions/*.deb ~/tapasco-artifacts/toolflow.deb \
-        && sudo dpkg -i build/distributions/*.deb
-RUN cd tapasco-workspace && . tapasco-setup.sh \
-        && tapasco-build-libs --skip_driver
-RUN cd tapasco-workspace && cd build* \
-        && cpack -G DEB \
-        && cp *.deb ~/tapasco-artifacts/runtime.deb \
-        && sudo dpkg -i *.deb
-RUN cd && cd tapasco-workspace \
-        && sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh
-
-## Stage 3
-FROM development AS production
+## Stage 2.2 - development_closure
+FROM development_rose AS development_closure
 
 USER root
-COPY --from=development_closure /usr/rose-git/ /usr/rose-git/
+COPY --chown=build:build llp_tapasco /home/build/llp_tapasco
+COPY --chown=build:build llp_rrze /home/build/llp_rrze
+COPY --chown=build:build orkaevolution /home/build/orkaevolution
 
+# build and install tapasco llp
+WORKDIR /home/build/llp_tapasco
+RUN ./rebuild.sh -b
+RUN ./rebuild.sh -i
+
+# build and install rrze llp
+WORKDIR /home/build/llp_rrze
+RUN ./rebuild.sh -b
+RUN ./rebuild.sh -i
+
+# build and install orkaevolution
+WORKDIR /home/build/orkaevolution
+RUN ./build_clean.sh
+RUN ./install.sh
+
+#######################################
+## Stage 3 - production
+FROM development AS production
+
+# rose
+USER root
+COPY --from=development_closure /usr/rose-git/ /usr/rose-git/
+# tapasco
 COPY --from=development_closure /etc/profile.d/tapasco.sh /etc/profile.d/tapasco.sh
 COPY --from=development_closure /home/build/tapasco-artifacts /home/build/tapasco-artifacts
-RUN sudo dpkg -i /home/build/tapasco-artifacts/toolflow.deb
-RUN sudo dpkg -i /home/build/tapasco-artifacts/runtime.deb
-RUN rm -rf /home/build/tapasco-artifacts/
+RUN sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/toolflow.deb
+RUN sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/runtime.deb
+RUN rm -rf /home/build/llp_tapasco/
+# fpga infrastructure
+COPY --from=development_closure /opt/rrze_llp /opt/rrze_llp
+
+# orka
+
+
+# orka
+# fpgainfrastructure ?

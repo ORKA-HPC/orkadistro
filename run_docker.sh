@@ -131,9 +131,9 @@ function launch_container_background() {
     fullVolumeMountParams=(
            -v "$PWD:/mnt"
            -v "$PWD/orkaevolution:/home/build/orkaevolution"
-           -v "$PWD/fpgainfrastructure:/home/build/fpgainfrastructure"
+           -v "$PWD/llp_rrze:/home/build/llp_rrze"
+           -v "$PWD/llp_tapasco:/home/build/llp_tapasco"
            -v "$PWD/roserebuild:/home/build/roserebuild"
-           -v "$PWD/tapasco:/home/build/tapasco"
            -v "$PWD/tests:/home/build/tests"
            -v "$PWD/synthBin:/home/build/synthBin"
            -v "$PWD/$mnt_point:$docker_mnt_point" )
