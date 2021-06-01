@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y \
         flex bison ghostscript iputils-ping
 ## Devtools (including Ccache)
 RUN apt-get update && \
-        apt-get -y install ranger vim graphviz sudo ccache
+        apt-get -y install ranger vim graphviz sudo ccache parallel \
+        groff-base perl-doc
 # tapasco runtime...
 RUN apt-get update && \
         apt-get install -y \
