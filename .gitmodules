@@ -20,9 +20,9 @@
 [submodule "vcuboxsetup"]
 	path = execEnvSetupVcu118
 	url = git@i2git.cs.fau.de:orka/execenvs/vcuboxsetup.git
-[submodule "tapasco_llp/tapasco_llp_repo"]
+[submodule "llp_tapasco/tapasco_llp_repo"]
 	path = tapasco_llp/tapasco_llp_repo
 	url = https://github.com/esa-tu-darmstadt/tapasco.git
-[submodule "rrze_llp/rrze_llp_repo"]
-	path = rrze_llp/rrze_llp_repo
+[submodule "llp_rrze/rrze_llp_repo"]
+	path = llp_rrze/rrze_llp_repo
 	url = git@i2git.cs.fau.de:orka/Vivado/fpgaInfrastructure.git
