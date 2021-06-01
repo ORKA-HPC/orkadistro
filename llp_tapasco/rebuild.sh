@@ -49,9 +49,9 @@ function buildRuntime() (
     cd tapasco_llp_build
     ../tapasco_llp_repo/tapasco-init.sh
     . tapasco-setup.sh
-    tapasco-build-libs --skip_driver || return 1
+    tapasco-build-libs --mode=release --skip_driver || return 1
     pushd build*
-    cpack -G DEB || return 1
+    cpack -P tapasco-runtime -G DEB || return 1
     popd
     cp build*/*.deb ../tapasco_llp_artifacts/runtime.deb || return 1
 )
@@ -60,9 +60,19 @@ function cleanup() (
     rm -rf tapasco_llp_build/
 )
 
+function buildConfigFile() (
+    pushd tapasco_llp_build
+    ../tapasco_llp_repo/tapasco-init.sh
+    . tapasco-setup.sh
+    popd
+    cd tapasco_llp_artifacts
+    ${TAPASCO_HOME_TOOLFLOW}/os-package/tapasco-init-toolflow.sh
+)
+
 function build() {
     buildToolflow || return 1
     buildRuntime || return 1
+    buildConfigFile || return 1
     return 0;
 }
 
@@ -72,8 +82,9 @@ function reset() {
 
 function install() (
     cd tapasco_llp_artifacts
-    sudo dpkg -i toolflow.deb || return 1
     sudo dpkg -i runtime.deb || return 1
+    sudo dpkg -i toolflow.deb || return 1
+    sudo install tapasco-setup-toolflow.sh /etc/profile.d/tapasco.sh
 )
 
 cleanup
