@@ -1,9 +1,6 @@
 [submodule "orkaevolution"]
 	path = orkaevolution
 	url = git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
-[submodule "fpgainfrastructure"]
-	path = fpgainfrastructure
-	url = git@i2git.cs.fau.de:orka/vivado/fpgainfrastructure.git
 [submodule "vivado-boards"]
 	path = vivado-boards
 	url = https://github.com/Digilent/vivado-boards
