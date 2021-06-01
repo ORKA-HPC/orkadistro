@@ -60,19 +60,9 @@ function cleanup() (
     rm -rf tapasco_llp_build/
 )
 
-function buildConfigFile() (
-    pushd tapasco_llp_build
-    ../tapasco_llp_repo/tapasco-init.sh
-    . tapasco-setup.sh
-    popd
-    cd tapasco_llp_artifacts
-    ${TAPASCO_HOME_TOOLFLOW}/os-package/tapasco-init-toolflow.sh
-)
-
 function build() {
     buildToolflow || return 1
     buildRuntime || return 1
-    buildConfigFile || return 1
     return 0;
 }
 
@@ -84,7 +74,9 @@ function install() (
     cd tapasco_llp_artifacts
     sudo dpkg -i runtime.deb || return 1
     sudo dpkg -i toolflow.deb || return 1
-    sudo install tapasco-setup-toolflow.sh /etc/profile.d/tapasco.sh
+
+    /opt/tapasco/tapasco-init-toolflow.sh
+    sudo install tapasco-setup-toolflow.sh /etc/profile.d/tapasco.sh || return 1
 )
 
 cleanup
