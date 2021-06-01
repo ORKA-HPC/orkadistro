@@ -63,3 +63,5 @@ prepare
 [ "$RESET" = "1" ] && { reset || exit 1; }
 [ "$BUILD" = "1" ] && { build || exit 1; }
 [ "$INSTALL" = "1" ] && { install || exit 1; }
+
+exit 0
