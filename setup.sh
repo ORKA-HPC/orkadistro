@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-CLEAN_BUILD_ROSE=0
-CLEAN_BUILD_ORKA=0
-CLEAN_BUILD_TAPASCO=0
-INSTALL_ROSE=0
 PREPARE_ORKA_DISTRO=0
 BUILD_DOCKER=0
-CLEAN_BUILD_FPGAINFRASTRUCTURE=0
+
+CLEAN_BUILD_ROSE=0
+CLEAN_BUILD_TAPASCO=0
+CLEAN_BUILD_RRZE=0
+CLEAN_BUILD_ORKA=0
+
+INSTALL_ROSE=0
+INSTALL_TAPASCO=0
+INSTALL_RRZE=0
+INSTALL_ORKA=0
 
 MAX_CORES="${MAX_CORES:-4}"
-echo Running with MAX_CORES = $MAX_CORES
+echo Running with $MAX_CORES cores
 
 function testPrerequisiteChecker() {
     function fnocker() { echo Docker version 13.03.8; }
@@ -69,51 +74,77 @@ while [ "${1:-}" != "" ]; do
         "--clean-build-rose" | "-c")
             CLEAN_BUILD_ROSE=1
             ;;
-        "--install-rose" | "-i")
-            INSTALL_ROSE=1
-            ;;
         "--clean-build-tapasco")
             CLEAN_BUILD_TAPASCO=1
+            ;;
+        "--clean-build-rrze")
+            CLEAN_BUILD_RRZE=1
             ;;
         "--clean-build-orka")
             CLEAN_BUILD_ORKA=1
             ;;
+        "--install-rose" | "-i")
+            INSTALL_ROSE=1
+            ;;
+        "--install-tapasco")
+            INSTALL_TAPASCO=1
+            ;;
+        "--install-rrze")
+            INSTALL_RRZE=1
+            ;;
+        "--install-orka")
+            INSTALL_ORKA=1
+            ;;
         "--after-pull")
             tryToShutdownContainer
+            BUILD_DOCKER=1
+            INSTALL_ROSE=1
+            INSTALL_TAPASCO=1
+            INSTALL_RRZE=1
+            INSTALL_ORKA=1
+            ;;
+        "--clean-after-pull")
+            tryToShutdownContainer
             PREPARE_ORKA_DISTRO=1
-            REDEPLOY_ROSE=1
+            BUILD_DOCKER=1
+            CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
+            CLEAN_BUILD_RRZE=1
             CLEAN_BUILD_ORKA=1
             INSTALL_ROSE=1
-            BUILD_DOCKER=1
-            CLEAN_BUILD_FPGAINFRASTRUCTURE=1
+            INSTALL_TAPASCO=1
+            INSTALL_RRZE=1
+            INSTALL_ORKA=1
             ;;
         "--init")
+            PREPARE_ORKA_DISTRO=1
+            BUILD_DOCKER=1
             CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
             CLEAN_BUILD_ORKA=1
-            PREPARE_ORKA_DISTRO=1
+            CLEAN_BUILD_RRZE=1
             INSTALL_ROSE=1
-            BUILD_DOCKER=1
-            CLEAN_BUILD_FPGAINFRASTRUCTURE=1
+            INSTALL_TAPASCO=1
+            INSTALL_RRZE=1
+            INSTALL_ORKA=1
             ;;
         "--prepare-orkadistro")
             PREPARE_ORKA_DISTRO=1
-            ;;
-        "--clean-build-fpgainfrastructure")
-            CLEAN_BUILD_FPGAINFRASTRUCTURE=1
             ;;
         "--build-docker")
             BUILD_DOCKER=1
             ;;
         "--help" | "-h")
-            echo "--prepare-rose"
-            echo "--clean-build-rose"
-            echo "--clean-build-orka"
-            echo "--clean-build-tapasco"
-            echo "--install-rose"
             echo "--prepare-orkadistro"
             echo "--build-docker"
+            echo "--clean-build-rose"
+            echo "--clean-build-tapasco"
+            echo "--clean-build-rrze"
+            echo "--clean-build-orka"
+            echo "--install-rose"
+            echo "--install-tapasco"
+            echo "--install-rrze"
+            echo "--install-orka"
             exit 0
             ;;
         *)
@@ -133,22 +164,22 @@ function buildDocker() {
     ./rebuild_docker.sh
 }
 
-function rebuildRose() {
-    echo [rebuild rose]
-    ./run_docker.sh -r --exec-non-interactive \
-                    "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -r"
-}
-
 function installRose() {
     echo [install rose]
     ./run_docker.sh -r --exec-non-interactive \
                     "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -i"
 }
 
-function cleanBuildFpgaInfrastructure() {
-    echo [clean build fpgainfrastructure "(ap2)"]
+function cleanBuildRrze() {
+    echo [clean build RRZE LLP]
     ./run_docker.sh -r --exec-non-interactive \
-                 "cd fpgainfrastructure; make clean && make all"
+                 "cd && cd llp_rrze && ./rebuild.sh -b"
+}
+
+function installRrze() {
+    echo [install RRZE LLP]
+    ./run_docker.sh -r --exec-non-interactive \
+                 "cd && cd llp_rrze && ./rebuild.sh -i"
 }
 
 function cleanBuildRose() {
@@ -164,9 +195,15 @@ function installRose() {
 }
 
 function cleanBuildOrka() {
-    echo [build orkaevolution]
+    echo [build ORKA]
     ./run_docker.sh -r --exec-non-interactive \
                     "cd orkaevolution; ./build_clean.sh"
+}
+
+function installOrka() {
+    echo [install ORKA]
+    ./run_docker.sh -r --exec-non-interactive \
+                    "cd orkaevolution; ./install.sh"
 }
 
 function createTapascoSetup() {
@@ -204,21 +241,31 @@ function linkTapascoPath() {
 }
 
 function cleanBuildTapasco() {
-    echo [build tapasco]
-    createTapascoSetup || return 1
-    buildTapascoToolflow || return 1
-    buildTapascoRuntime || return 1
-    packageTapascoRuntime || return 1
-    linkTapascoPath || return 1
+    echo [clean build tapasco]
+    ./run_docker.sh -r --exec-non-interactive \
+                    'cd && cd llp_tapasco && ./rebuild.sh -b'
+}
+
+function installTapasco() {
+    echo [install tapasco]
+    ./run_docker.sh -r --exec-non-interactive \
+                    'cd && cd llp_tapasco && ./rebuild.sh -i'
 }
 
 [ "$PREPARE_ORKA_DISTRO" = "1" ] && { prepareOrkaDistro || exit 1; }
+
 [ "$BUILD_DOCKER" = "1" ] && { buildDocker || exit 1; }
+
 [ "$CLEAN_BUILD_ROSE" = 1 ] && { cleanBuildRose || exit 1; }
-[ "$REDEPLOY_ROSE" = 1 ] && { rebuildRose || exit 1; installRose || exit 1; }
 [ "$INSTALL_ROSE" = 1 ] && { installRose || exit 1; }
+
 [ "$CLEAN_BUILD_TAPASCO" = 1 ] && { cleanBuildTapasco || exit 1; }
+[ "$INSTALL_TAPASCO" = 1 ] && { installTapasco || exit 1; }
+
+[ "$CLEAN_BUILD_RRZE" = 1 ] && { cleanBuildRrze || exit 1; }
+[ "$INSTALL_RRZE" = 1 ] && { installRrze || exit 1; }
+
 [ "$CLEAN_BUILD_ORKA" = 1 ] && { cleanBuildOrka || exit 1; }
-[ "$CLEAN_BUILD_FPGAINFRASTRUCTURE" = 1 ] && { cleanBuildFpgaInfrastructure || exit 1; }
+[ "$INSTALL_ORKA" = 1 ] && { installOrka || exit 1; }
 
 exit 0
