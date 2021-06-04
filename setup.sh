@@ -7,7 +7,6 @@ INSTALL_ROSE=0
 PREPARE_ORKA_DISTRO=0
 BUILD_DOCKER=0
 CLEAN_BUILD_FPGAINFRASTRUCTURE=0
-CLEAN_BUILD_ORKAXOMP=0
 
 MAX_CORES="${MAX_CORES:-4}"
 echo Running with MAX_CORES = $MAX_CORES
@@ -88,7 +87,6 @@ while [ "${1:-}" != "" ]; do
             INSTALL_ROSE=1
             BUILD_DOCKER=1
             CLEAN_BUILD_FPGAINFRASTRUCTURE=1
-            CLEAN_BUILD_ORKAXOMP=1
             ;;
         "--init")
             CLEAN_BUILD_ROSE=1
@@ -98,13 +96,9 @@ while [ "${1:-}" != "" ]; do
             INSTALL_ROSE=1
             BUILD_DOCKER=1
             CLEAN_BUILD_FPGAINFRASTRUCTURE=1
-            CLEAN_BUILD_ORKAXOMP=1
             ;;
         "--prepare-orkadistro")
             PREPARE_ORKA_DISTRO=1
-            ;;
-        "--clean-build-orkaxomp")
-            CLEAN_BUILD_ORKAXOMP=1
             ;;
         "--clean-build-fpgainfrastructure")
             CLEAN_BUILD_FPGAINFRASTRUCTURE=1
@@ -155,12 +149,6 @@ function cleanBuildFpgaInfrastructure() {
     echo [clean build fpgainfrastructure "(ap2)"]
     ./run_docker.sh -r --exec-non-interactive \
                  "cd fpgainfrastructure; make clean && make all"
-}
-
-function cleanBuildOrkaxomp() {
-    echo [clean build orkaxomp]
-    ./run_docker.sh -r --exec-non-interactive \
-                 "cd orkaevolution/orka_xomp_common/; make clean && make all"
 }
 
 function cleanBuildRose() {
@@ -232,6 +220,5 @@ function cleanBuildTapasco() {
 [ "$CLEAN_BUILD_TAPASCO" = 1 ] && { cleanBuildTapasco || exit 1; }
 [ "$CLEAN_BUILD_ORKA" = 1 ] && { cleanBuildOrka || exit 1; }
 [ "$CLEAN_BUILD_FPGAINFRASTRUCTURE" = 1 ] && { cleanBuildFpgaInfrastructure || exit 1; }
-[ "$CLEAN_BUILD_ORKAXOMP" = 1 ] && { cleanBuildOrkaxomp || exit 1; }
 
 exit 0
