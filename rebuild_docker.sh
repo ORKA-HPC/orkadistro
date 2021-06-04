@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
-IMAGE_TAG="development"
-TARGET="development"
-
-DOCKER_PUSH_PATH="i2git.cs.fau.de:5005/orka/dockerfiles"
+source common_docker.sh
 
 PUSH_IMAGE="false"
 MAX_CORES="${MAX_CORES:-}"
@@ -45,7 +41,6 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-DOCKER_COMPOUND_TAG="$IMAGE_NAME:$IMAGE_TAG"
 
 function linkDockerIgnoreBasedOnTarget() {
     local dign_file=".dockerignore"
@@ -82,7 +77,7 @@ docker build \
        --build-arg USER_ID="$USER_ID" \
        --build-arg ARG_MAX_CORES="$MAX_CORES" \
        --build-arg VIVADO_VERSION="${VIVADO_VERSION}" \
-       -t "${DOCKER_COMPOUND_TAG}" . || {
+       -t "$IMAGE_FULL_BUILD_NAME" . || {
     echo "[rebuild_docker.sh] Docker build failed."
     echo "[rebuild_docker.sh] Note that you MUST stop the docker container ($ ./run_docker -q)"
     echo "[rebuild_docker.sh] before running this script using "
@@ -90,7 +85,6 @@ docker build \
 
 
 if [ "$PUSH_IMAGE" == "true" ]; then
-    echo [ Push image "${DOCKER_COMPOUND_TAG}" to "${DOCKER_PUSH_PATH}" ]
-    # docker tag "$DOCKER_COMPOUND_TAG" "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
-    docker push "$DOCKER_PUSH_PATH"/"${DOCKER_COMPOUND_TAG}"
+    echo [ Push image "${IMAGE_FULL_NAME}" to "${DOCKER_PUSH_PATH}" ]
+    docker push "$IMAGE_FULL_BUILD_NAME"
 fi

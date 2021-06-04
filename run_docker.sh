@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source common_docker.sh
+
 function print_help(){
     echo "flags:"
     echo "--stop or -q"
@@ -10,10 +12,7 @@ function print_help(){
     echo "--help or -h"
 }
 
-IMAGE_TAG="${IMAGE_TAG:-"development"}"
-IMAGE_NAME="${IMAGE_NAME:-"orkadistro-img-$(git rev-parse HEAD)"}"
 CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(realpath $PWD) | cut -c 1-8)"}"
-TARGET="development"
 
 # Xilinx
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
@@ -153,15 +152,15 @@ function launch_container_background() {
     case "$TARGET" in
         "development")
             echo [docker run --name "$(fullContName)" ...]
-            echo [uses the following image: $IMAGE_NAME:$IMAGE_TAG]
+            echo [uses the following image: "$IMAGE_FULL_BUILD_NAME"]
             docker run "${envVarsToPass[@]}" "${fullVolumeMountParams[@]}" \
-                   --name "$(fullContName)" -t -d $IMAGE_NAME:$IMAGE_TAG
+                   --name "$(fullContName)" -t -d "$IMAGE_FULL_BUILD_NAME"
         ;;
         "development_closure" | "production")
             echo [docker run --name "$(fullContName)" ...]
-            echo [uses the following image: $IMAGE_NAME:$IMAGE_TAG]
+            echo [uses the following image: "$IMAGE_FULL_BUILD_NAME"]
             docker run "${envVarsToPass[@]}" "${fpgaVolumeMountParams[@]}" \
-                   --name "$(fullContName)" -t -d $IMAGE_NAME:$IMAGE_TAG
+                   --name "$(fullContName)" -t -d "$IMAGE_FULL_BUILD_NAME"
         ;;
     esac
 }
@@ -170,7 +169,7 @@ function start_container() {
     echo [start container]
     setup_board_files_overlay_mount
     launch_container_background 2>/dev/null || {
-        echo [run_docker.sh] Creating and running the docker container failed.
+        echo "[run_docker.sh] Creating and running the docker container failed."
         echo "               - Either because it was already created and is now suspended"
         echo "               - or because you just pulled this repo."
         echo "               In the case you have recently __pulled__ orkadistro,"
