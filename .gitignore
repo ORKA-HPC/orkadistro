@@ -1,3 +1,5 @@
 __vivado_boardfiles_overlay_work_dir
 __vivado_boardfiles_overlay_mnt_point
 .dockerignore
+llp_tapasco/tapasco_llp_artifacts/
+synthBin
