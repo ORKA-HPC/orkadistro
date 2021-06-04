@@ -79,7 +79,7 @@ USER build
 WORKDIR /home/build
 
 #######################################
-## Stage 2 - development_rose
+## Stage 2.1 - development_rose
 FROM development AS development_rose
 
 USER root
@@ -91,7 +91,7 @@ WORKDIR /home/build/roserebuild
 # RUN ./rebuild -b # if not built
 RUN ./rebuild.sh -i
 WORKDIR /home/build
-RUN rm -rf roserebuild
+RUN cp roserebuild/rose_install/orka-rose.deb /home/build/ && rm -rf roserebuild
 
 ## Stage 2.2 - development_closure
 FROM development_rose AS development_closure
@@ -103,13 +103,11 @@ COPY --chown=build:build orkaevolution /home/build/orkaevolution
 
 # build and install tapasco llp
 WORKDIR /home/build/llp_tapasco
-RUN ./rebuild.sh -b
-RUN ./rebuild.sh -i
+RUN ./rebuild.sh -b && ./rebuild.sh -i
 
 # build and install rrze llp
 WORKDIR /home/build/llp_rrze
-RUN ./rebuild.sh -b
-RUN ./rebuild.sh -i
+RUN ./rebuild.sh -b && ./rebuild.sh -i
 
 # build and install orkaevolution
 WORKDIR /home/build/orkaevolution
@@ -122,18 +120,23 @@ FROM development AS production
 
 # rose
 USER root
-COPY --from=development_closure /usr/rose-git/ /usr/rose-git/
-# tapasco
-COPY --from=development_closure /etc/profile.d/tapasco.sh /etc/profile.d/tapasco.sh
-COPY --from=development_closure /home/build/tapasco-artifacts /home/build/tapasco-artifacts
-RUN sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/toolflow.deb
-RUN sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/runtime.deb
-RUN rm -rf /home/build/llp_tapasco/
-# fpga infrastructure
-COPY --from=development_closure /opt/rrze_llp /opt/rrze_llp
+COPY --from=development_rose \
+        /home/build/orka-rose.deb \
+        /home/build/orka-rose.deb
+RUN sudo dpkg --install /home/build/orka-rose.deb \
+        && rm /home/build/orka-rose.deb
+
+# llp_tapasco
+COPY --from=development_closure \
+        /etc/profile.d/tapasco.sh /etc/profile.d/tapasco.sh
+COPY --from=development_closure \
+        /home/build/llp_tapasco/tapasco_llp_artifacts/ \
+        /home/build/llp_tapasco/tapasco_llp_artifacts/
+RUN sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/toolflow.deb \
+        && sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/runtime.deb \
+        && rm -rf /home/build/llp_tapasco/
+# llp_rrze
+COPY --from=development_closure /opt/llp_rrze /opt/llp_rrze
 
 # orka
-
-
-# orka
-# fpgainfrastructure ?
+COPY --from=development_closure /opt/orka /opt/orka
