@@ -156,9 +156,11 @@ done
 
 function prepareOrkaDistro() {
     echo [submodule setup]
-    local gitFlagNoEdgRepo="$( [ "$NO_EDG_REPO" = 1 ] && echo -n '-c submodule."src/frontend/CxxFrontend/EDG".init=none')"
-    git $gitFlagNoEdgRepo submodule sync --recursive || return 1
-    git $gitFlagNoEdgRepo submodule update --init --recursive || return 1
+    local additionalGitFlags=()
+    [ "$NO_RRZE_LLP" = 1 ] && additionalGitFlags+=( -c submodule."llp_rrze/rrze_llp_repo".update=none )
+    [ "$NO_EDG_REPO" = 1 ] && additionalGitFlags+=( -c submodule."src/frontend/CxxFrontend/EDG".update=none )
+    git "${additionalGitFlags[@]}" submodule sync --recursive || return 1
+    git "${additionalGitFlags[@]}" submodule update --init --recursive || return 1
 }
 
 function buildDocker() {
