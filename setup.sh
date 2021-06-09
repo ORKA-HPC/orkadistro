@@ -13,6 +13,7 @@ INSTALL_TAPASCO=0
 INSTALL_RRZE=0
 INSTALL_ORKA=0
 
+NO_EDG_REPO="${NO_EDG_REPO:-0}"
 MAX_CORES="${MAX_CORES:-4}"
 echo Running with $MAX_CORES cores
 
@@ -155,8 +156,9 @@ done
 
 function prepareOrkaDistro() {
     echo [submodule setup]
-    git submodule sync --recursive || return 1
-    git submodule update --init --recursive || return 1
+    local gitFlagNoEdgRepo="$( [ "$NO_EDG_REPO" = 1 ] && echo -n '-c submodule."src/frontend/CxxFrontend/EDG".init=none')"
+    git $gitFlagNoEdgRepo submodule sync --recursive || return 1
+    git $gitFlagNoEdgRepo submodule update --init --recursive || return 1
 }
 
 function buildDocker() {
