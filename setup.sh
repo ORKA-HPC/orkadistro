@@ -210,40 +210,6 @@ function installOrka() {
                     "cd orkaevolution; ./install.sh"
 }
 
-function createTapascoSetup() {
-    ./run_docker.sh -r --exec-non-interactive \
-                    'cd && mkdir -p tapasco-workspace &&
-                         cd tapasco-workspace &&
-                         ../tapasco/tapasco-init.sh' || return 1
-}
-
-function buildTapascoToolflow() {
-    ./run_docker.sh -r --exec-non-interactive \
-                    'cd && cd tapasco-workspace &&
-                    . tapasco-setup.sh && tapasco-build-toolflow' || return 1
-}
-
-function buildTapascoRuntime() {
-    ./run_docker.sh -r --exec-non-interactive \
-                    "cd && cd tapasco-workspace &&
-                    . tapasco-setup.sh && tapasco-build-libs --skip_driver" \
-                        || return 1
-}
-
-function packageTapascoRuntime() {
-    ./run_docker.sh -r --exec-non-interactive \
-                    "cd && cd tapasco-workspace &&
-                    cd build* && cpack -G DEB && sudo dpkg -i *.deb" \
-                        || return 1
-}
-
-function linkTapascoPath() {
-    ./run_docker.sh -r --exec-non-interactive \
-                    'cd && cd tapasco-workspace &&
-                    sudo cp tapasco-setup.sh /etc/profile.d/tapasco.sh' \
-                        || return 1
-}
-
 function cleanBuildTapasco() {
     echo [clean build tapasco]
     ./run_docker.sh -r --exec-non-interactive \
