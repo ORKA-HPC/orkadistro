@@ -48,6 +48,21 @@ See section `Frequent Issues` if `setup.sh` fails.
   If you encounter strange errors later on,
 - try to use `--clean-after-pull`.
 
+### Manually building ORKA-HPC natively (unsupported)
+
+Another alternative is to try to build everything natively 
+without the docker container. This is not currently supported 
+by `setup.sh` and will require some manual work. Here are the general steps:
+
+- clone orkadistro and recursively initialize all submodules
+- for each mod in {roserebuild, llp_rrze, llp_tapasco}
+  - change into dir of `mod`
+  - execute `./rebuild.sh -b`: Builds a DEB-Package (Exception: llp_rrze)
+  - execute `./rebuild.sh -i`: Installs a DEB-Package
+- change into orkaevolution:
+- execute `./build_clean.sh`
+- execute `./install.sh`
+
 ### Operate ORKA-HPC
 
 The following commands assume that you pulled orkadistro and
