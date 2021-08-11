@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
 ## Devtools (including Ccache)
 RUN apt-get update && \
         apt-get -y install ranger vim graphviz sudo ccache parallel \
-        groff-base perl-doc
+        groff-base perl-doc valgrind
 # tapasco runtime...
 RUN apt-get update && \
         apt-get install -y \
@@ -32,6 +32,10 @@ RUN apt-get update -y && \
         apt-get install -y libtinyxml2-6 libtinyxml2-dev mlocate clang-format \
         tcl-dev uuid-runtime gdb libffi-dev cmake \
         libffi-dev freeglut3-dev libx11-dev
+# Datacollect Dependencies
+RUN apt-get update -y && \
+        apt-get install -y scala libxml2-utils
+
 RUN updatedb
 
 ## Ccache config
