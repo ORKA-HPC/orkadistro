@@ -1,18 +1,18 @@
 [submodule "orkaevolution"]
 	path = orkaevolution
-	url = git@i2git.cs.fau.de:orka/s2scompiler/orkaevolution.git
+	url = git@cs2-gitlab.cs.fau.de:orka/compiler.git
 [submodule "vivado-boards"]
 	path = vivado-boards
 	url = https://github.com/Digilent/vivado-boards
 [submodule "roserebuild"]
 	path = roserebuild
-	url = git@i2git.cs.fau.de:personalorka/utilities/roserebuild.git
+	url = git@cs2-gitlab.cs.fau.de:orka/roserebuild.git
 [submodule "orkadistrotestenv"]
 	path = orkadistrotestenv
-	url = git@i2git.cs.fau.de:orka/vagrantfiles/orkadistrotestenv.git
+	url = git@cs2-gitlab.cs.fau.de:orka/orkadistrotestenv.git
 [submodule "vcuboxsetup"]
 	path = execEnvSetupVcu118
-	url = git@i2git.cs.fau.de:orka/execenvs/vcuboxsetup.git
+	url = git@cs2-gitlab.cs.fau.de:orka/vcuboxsetup.git
 [submodule "llp_tapasco/tapasco_llp_repo"]
 	path = llp_tapasco/tapasco_llp_repo
 	url = https://github.com/esa-tu-darmstadt/tapasco.git
