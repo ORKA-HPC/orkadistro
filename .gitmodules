@@ -1,5 +1,5 @@
 [submodule "orkaevolution"]
-	path = orkaevolution
+	path = compiler
 	url = git@cs2-gitlab.cs.fau.de:orka/compiler.git
 [submodule "vivado-boards"]
 	path = vivado-boards
