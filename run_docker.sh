@@ -12,8 +12,6 @@ function print_help(){
     echo "--help or -h"
 }
 
-CONTAINER_NAME="${CONTAINER_NAME:-"orkadistro-cont-$(sha256sum <(realpath $PWD) | cut -c 1-8)"}"
-
 # Xilinx
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
 XILINXD_LICENSE_FILE="${XILINXD_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlangen.de"}"
@@ -120,10 +118,6 @@ function quartusInstalled() {
 
 function xilinxInstalled() {
     [ -d "$XILINX_HOST_PATH" ] && return 0 || return 1
-}
-
-function fullContName() {
-    echo "$CONTAINER_NAME-$TARGET"
 }
 
 function launch_container_background() {
