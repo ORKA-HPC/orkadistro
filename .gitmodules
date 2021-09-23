@@ -17,5 +17,5 @@
 	path = llp_tapasco/tapasco_llp_repo
 	url = https://github.com/esa-tu-darmstadt/tapasco.git
 [submodule "llp_rrze/rrze_llp_repo"]
-	path = llp_rrzk/rrze_llp_repo
+	path = llp_rrzk/rrzk_llp_repo
 	url = https://github.com/ORKA-HPC/orka-hpc-llp.git
