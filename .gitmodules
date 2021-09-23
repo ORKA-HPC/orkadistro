@@ -18,4 +18,4 @@
 	url = https://github.com/esa-tu-darmstadt/tapasco.git
 [submodule "llp_rrze/rrze_llp_repo"]
 	path = llp_rrze/rrze_llp_repo
-	url = git@i2git.cs.fau.de:orka/Vivado/fpgaInfrastructure.git
+	url = https://github.com/ORKA-HPC/orka-hpc-llp.git
