@@ -103,7 +103,7 @@ FROM development_rose AS development_closure
 USER root
 COPY --chown=build:build llp_tapasco /home/build/llp_tapasco
 COPY --chown=build:build llp_rrze /home/build/llp_rrze
-COPY --chown=build:build orkaevolution /home/build/orkaevolution
+COPY --chown=build:build compiler /home/build/compiler
 
 # build and install tapasco llp
 WORKDIR /home/build/llp_tapasco
@@ -113,8 +113,8 @@ RUN ./rebuild.sh -b && ./rebuild.sh -i
 WORKDIR /home/build/llp_rrze
 RUN ./rebuild.sh -b && ./rebuild.sh -i
 
-# build and install orkaevolution
-WORKDIR /home/build/orkaevolution
+# build and install compiler
+WORKDIR /home/build/compiler
 RUN ./build_clean.sh
 RUN ./install.sh
 

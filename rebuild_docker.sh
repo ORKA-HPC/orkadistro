@@ -7,7 +7,7 @@ MAX_CORES="${MAX_CORES:-}"
 CLEAN_BUILD="${CLEAN_BUILD:-0}"
 USER_ID="${USER_ID:-"$(id -u)"}"
 
-# rm -rf orkaevolution
+# rm -rf compiler
 while [ "${1:-}" != "" ]; do
     case "${1}" in
         "--max-cores" | "-m")
