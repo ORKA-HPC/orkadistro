@@ -201,13 +201,13 @@ function installRose() {
 function cleanBuildOrka() {
     echo [build ORKA]
     ./run_docker.sh -r --exec-non-interactive \
-                    "cd orkaevolution; ./build_clean.sh"
+                    "cd compiler; ./build_clean.sh"
 }
 
 function installOrka() {
     echo [install ORKA]
     ./run_docker.sh -r --exec-non-interactive \
-                    "cd orkaevolution; ./install.sh"
+                    "cd compiler; ./install.sh"
 }
 
 function cleanBuildTapasco() {
