@@ -5,12 +5,12 @@ BUILD_DOCKER=0
 
 CLEAN_BUILD_ROSE=0
 CLEAN_BUILD_TAPASCO=0
-CLEAN_BUILD_RRZE=0
+CLEAN_BUILD_RRZK=0
 CLEAN_BUILD_ORKA=0
 
 INSTALL_ROSE=0
 INSTALL_TAPASCO=0
-INSTALL_RRZE=0
+INSTALL_RRZK=0
 INSTALL_ORKA=0
 
 NO_EDG_REPO="${NO_EDG_REPO:-0}"
@@ -78,8 +78,8 @@ while [ "${1:-}" != "" ]; do
         "--clean-build-tapasco")
             CLEAN_BUILD_TAPASCO=1
             ;;
-        "--clean-build-rrze")
-            CLEAN_BUILD_RRZE=1
+        "--clean-build-rrzk")
+            CLEAN_BUILD_RRZK=1
             ;;
         "--clean-build-orka")
             CLEAN_BUILD_ORKA=1
@@ -90,8 +90,8 @@ while [ "${1:-}" != "" ]; do
         "--install-tapasco")
             INSTALL_TAPASCO=1
             ;;
-        "--install-rrze")
-            INSTALL_RRZE=1
+        "--install-rrzk")
+            INSTALL_RRZK=1
             ;;
         "--install-orka")
             INSTALL_ORKA=1
@@ -101,7 +101,7 @@ while [ "${1:-}" != "" ]; do
             BUILD_DOCKER=1
             INSTALL_ROSE=1
             INSTALL_TAPASCO=1
-            INSTALL_RRZE=1
+            INSTALL_RRZK=1
             INSTALL_ORKA=1
             ;;
         "--clean-after-pull")
@@ -110,11 +110,11 @@ while [ "${1:-}" != "" ]; do
             BUILD_DOCKER=1
             CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
-            CLEAN_BUILD_RRZE=1
+            CLEAN_BUILD_RRZK=1
             CLEAN_BUILD_ORKA=1
             INSTALL_ROSE=1
             INSTALL_TAPASCO=1
-            INSTALL_RRZE=1
+            INSTALL_RRZK=1
             INSTALL_ORKA=1
             ;;
         "--init")
@@ -123,10 +123,10 @@ while [ "${1:-}" != "" ]; do
             CLEAN_BUILD_ROSE=1
             CLEAN_BUILD_TAPASCO=1
             CLEAN_BUILD_ORKA=1
-            CLEAN_BUILD_RRZE=1
+            CLEAN_BUILD_RRZK=1
             INSTALL_ROSE=1
             INSTALL_TAPASCO=1
-            INSTALL_RRZE=1
+            INSTALL_RRZK=1
             INSTALL_ORKA=1
             ;;
         "--prepare-orkadistro")
@@ -140,11 +140,11 @@ while [ "${1:-}" != "" ]; do
             echo "--build-docker"
             echo "--clean-build-rose"
             echo "--clean-build-tapasco"
-            echo "--clean-build-rrze"
+            echo "--clean-build-rrzk"
             echo "--clean-build-orka"
             echo "--install-rose"
             echo "--install-tapasco"
-            echo "--install-rrze"
+            echo "--install-rrzk"
             echo "--install-orka"
             exit 0
             ;;
@@ -157,7 +157,7 @@ done
 function prepareOrkaDistro() {
     echo [submodule setup]
     local additionalGitFlags=()
-    [ "$NO_RRZE_LLP" = 1 ] && additionalGitFlags+=( -c submodule."llp_rrze/rrze_llp_repo".update=none )
+    [ "$NO_RRZK_LLP" = 1 ] && additionalGitFlags+=( -c submodule."llp_rrzk/rrzk_llp_repo".update=none )
     [ "$NO_EDG_REPO" = 1 ] && additionalGitFlags+=( -c submodule."src/frontend/CxxFrontend/EDG".update=none )
     git "${additionalGitFlags[@]}" submodule sync --recursive || return 1
     git "${additionalGitFlags[@]}" submodule update --init --recursive || return 1
@@ -174,16 +174,16 @@ function installRose() {
                     "cd roserebuild; MAX_CORES=${MAX_CORES} ./rebuild.sh -i"
 }
 
-function cleanBuildRrze() {
-    echo [clean build RRZE LLP]
+function cleanBuildRrzk() {
+    echo [clean build RRZK LLP]
     ./run_docker.sh -r --exec-non-interactive \
-                 "cd && cd llp_rrze && ./rebuild.sh -b"
+                 "cd && cd llp_rrzk && ./rebuild.sh -b"
 }
 
-function installRrze() {
-    echo [install RRZE LLP]
+function installRrzk() {
+    echo [install RRZK LLP]
     ./run_docker.sh -r --exec-non-interactive \
-                 "cd && cd llp_rrze && ./rebuild.sh -i"
+                 "cd && cd llp_rrzk && ./rebuild.sh -i"
 }
 
 function cleanBuildRose() {
@@ -232,8 +232,8 @@ function installTapasco() {
 [ "$CLEAN_BUILD_TAPASCO" = 1 ] && { cleanBuildTapasco || exit 1; }
 [ "$INSTALL_TAPASCO" = 1 ] && { installTapasco || exit 1; }
 
-[ "$CLEAN_BUILD_RRZE" = 1 ] && { cleanBuildRrze || exit 1; }
-[ "$INSTALL_RRZE" = 1 ] && { installRrze || exit 1; }
+[ "$CLEAN_BUILD_RRZK" = 1 ] && { cleanBuildRrzk || exit 1; }
+[ "$INSTALL_RRZK" = 1 ] && { installRrzk || exit 1; }
 
 [ "$CLEAN_BUILD_ORKA" = 1 ] && { cleanBuildOrka || exit 1; }
 [ "$INSTALL_ORKA" = 1 ] && { installOrka || exit 1; }
