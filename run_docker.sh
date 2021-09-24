@@ -124,7 +124,7 @@ function launch_container_background() {
     fullVolumeMountParams=(
            -v "$PWD:/mnt"
            -v "$PWD/compiler:/home/build/compiler"
-           -v "$PWD/llp_rrze:/home/build/llp_rrze"
+           -v "$PWD/llp_rrzk:/home/build/llp_rrzk"
            -v "$PWD/llp_tapasco:/home/build/llp_tapasco"
            -v "$PWD/roserebuild:/home/build/roserebuild"
            -v "$PWD/tests:/home/build/tests"
