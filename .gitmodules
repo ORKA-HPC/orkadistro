@@ -16,3 +16,6 @@
 [submodule "llp_tapasco/tapasco_llp_repo"]
 	path = llp_tapasco/tapasco_llp_repo
 	url = https://github.com/esa-tu-darmstadt/tapasco.git
+[submodule "llp_rrzk/orka-hpc-llp"]
+	path = llp_rrzk/orka-hpc-llp
+	url = https://github.com/ORKA-HPC/orka-hpc-llp.git
