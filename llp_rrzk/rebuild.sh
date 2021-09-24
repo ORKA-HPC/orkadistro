@@ -6,7 +6,7 @@ INSTALL=0
 RESET=0
 
 PREFIX="${PREFIX:-/opt}"
-INSTALL_LOC="$PREFIX/llp_rrze"
+INSTALL_LOC="$PREFIX/llp_rrzk"
 
 while [ "${1:-}" != "" ]; do
     case "$1" in
@@ -27,30 +27,30 @@ while [ "${1:-}" != "" ]; do
     shift
 done
 
-RRZE_LLP_DIRS=(
-    rrze_llp_repo
-    rrze_llp_artifacts
-    rrze_llp_build
+RRZK_LLP_DIRS=(
+    rrzk_llp_repo
+    rrzk_llp_artifacts
+    rrzk_llp_build
 )
 
 function reset() {
-    rm -rf "${RRZE_LLP_DIRS[@]}"
+    rm -rf "${RRZK_LLP_DIRS[@]}"
 }
 
 function build() (
-    cd rrze_llp_repo
+    cd rrzk_llp_repo
     make clean
     make all
 )
 
 function prepare() {
-    mkdir -p "${RRZE_LLP_DIRS[@]}"
+    mkdir -p "${RRZK_LLP_DIRS[@]}"
 }
 
 function install() (
     echo [ Remove previous installation ]
     sudo rm -rf "$INSTALL_LOC"
-    cd rrze_llp_repo
+    cd rrzk_llp_repo
     sudo mkdir -p "$INSTALL_LOC"
     for i in $(ls); do
         sudo cp -r "$i" "$INSTALL_LOC"/"$i"
