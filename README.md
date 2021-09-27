@@ -7,14 +7,9 @@
 - Optional: You need a research license for the EDG C++ frontend
   1. Contact `info@edg.com`
   2. Write that you need access to the EDG C++ frontend
-     sources. To make things as smooth as possible for you,
-     you should put me (`florian.andrefranc.mayer@fau.de`) on CC.
-     Tell them that you need a research license for EDG in order
-     to compile the ROSE toolchain from the sources. State that
-     ORKA-HPC is using a custom ROSE fork that won't work with
-     the pre-built EDG binaries from the standard ROSE distribution.
-  3. Once you got it, mail the license to me.
-  4. I will then give you access to a private
+     sources for research purposes.
+  3. Once you got it, mail the license to one of the orkadistro maintainers.
+  4. They will then give you access to a private
      repository containing ROSE's custom EDG sources.
 
 ## Getting Started
