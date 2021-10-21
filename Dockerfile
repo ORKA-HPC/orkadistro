@@ -63,7 +63,7 @@ RUN useradd --shell /bin/bash -u $USER_ID -o -c "" build
 # Copy system config files
 COPY cfg_files/profile_d_ccache.sh /etc/profile.d/ccache.sh
 COPY cfg_files/profile_d_xilinx_docker_path.sh /etc/profile.d/xilinx_docker_path.sh
-COPY cfg_files/profile_d_fpgainfrastructure_paths.sh /etc/profile.d/fpgainfrastructure.sh
+COPY cfg_files/profile_d_llp_rrzk_paths.sh /etc/profile.d/llp_rrzk.sh
 # Add and apply configuration of ld
 COPY cfg_files/ld.so.conf /etc/
 RUN ldconfig
