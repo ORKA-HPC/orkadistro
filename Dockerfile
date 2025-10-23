@@ -102,7 +102,7 @@ FROM development_rose AS development_closure
 
 USER root
 COPY --chown=build:build llp_tapasco /home/build/llp_tapasco
-COPY --chown=build:build llp_rrze /home/build/llp_rrze
+COPY --chown=build:build llp_rrzk /home/build/llp_rrzk
 COPY --chown=build:build compiler /home/build/compiler
 
 # build and install tapasco llp
@@ -110,7 +110,7 @@ WORKDIR /home/build/llp_tapasco
 RUN ./rebuild.sh -b && ./rebuild.sh -i
 
 # build and install rrze llp
-WORKDIR /home/build/llp_rrze
+WORKDIR /home/build/llp_rrzk
 RUN ./rebuild.sh -b && ./rebuild.sh -i
 
 # build and install compiler
@@ -139,8 +139,8 @@ COPY --from=development_closure \
 RUN sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/toolflow.deb \
         && sudo dpkg -i /home/build/llp_tapasco/tapasco_llp_artifacts/runtime.deb \
         && rm -rf /home/build/llp_tapasco/
-# llp_rrze
-COPY --from=development_closure /opt/llp_rrze /opt/llp_rrze
+# llp_rrzk
+COPY --from=development_closure /opt/llp_rrzk /opt/llp_rrzk
 
 # orka
 COPY --from=development_closure /opt/orka /opt/orka

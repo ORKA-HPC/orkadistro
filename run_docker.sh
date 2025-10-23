@@ -14,16 +14,16 @@ function print_help(){
 
 # Xilinx
 XILINX_HOST_PATH="${XILINX_HOST_PATH:-"/opt/Xilinx"}"
-XILINXD_LICENSE_FILE="${XILINXD_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlangen.de"}"
+XILINXD_LICENSE_FILE="${XILINXD_LICENSE_FILE:-"27000@lm-xilinx.rrz.uni-koeln.de"}"
 # be careful changing this. Some Vivado files generated for the host include absolute paths
 XILINX_DOCKER_PATH="${XILINX_DOCKER_PATH:-"/opt/Xilinx"}"
-XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2018.2"}"
+XILINX_VIVADO_VERSION="${XILINX_VIVADO_VERSION:-"2021.2"}"
 
 # Quartus
-LM_LICENSE_FILE="${LM_LICENSE_FILE:-"2100@scotty.e-technik.uni-erlangen.de"}"
+LM_LICENSE_FILE="${LM_LICENSE_FILE:-"28518@lm-intel.rrz.uni-koeln.de"}"
 QUARTUS_DOCKER_PATH="${QUARTUS_DOCKER_PATH:-"/opt/intel/"}"
 QUARTUS_HOST_PATH="${QUARTUS_HOST_PATH:-"/opt/intel/"}"
-QUARTUS_VERSION="${QUARTUS_VERSION:-"20.1"}"
+QUARTUS_VERSION="${QUARTUS_VERSION:-"21.1"}"
 
 [ ! -d $XILINX_HOST_PATH ] && {
     echo $XILINX_HOST_PATH does not exist in host file system
